@@ -53,7 +53,7 @@ html{
 body{
     background: var(--body-color);
     color: var(--text-color);
-    min-height: 200rem;
+    min-height: 100rem;
     overflow-x: hidden;
     position: relative;
 }
@@ -165,6 +165,9 @@ header {
     margin-right: 1rem;
 }
 
+/*user settings*/
+
+
 .dropdown-box{
     display: none;
     position: relative;
@@ -178,6 +181,18 @@ header {
     margin: 1rem;
     cursor: pointer;
     margin-right: 4rem;
+}
+
+.dropdown2{
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu2{
+    display: none;
+    position: absolute;
+    z-index: 1;
+    font-size: 0.7rem;
 }
 
 .dropdown-menu{
@@ -241,16 +256,16 @@ header {
     align-items: center;
     margin-top: 5rem !important;
     border-radius: 0.5rem;
+    justify-content: center;
 }
 
 .home-video{
     position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    object-fit: cover;
+    display: flex;
+    max-width: 100%;
+    align-items: center;
     border-radius: 0.5rem;
-    
+    z-index: -10;
 }
 
 .home-text{
@@ -431,6 +446,11 @@ header {
     transition: 0.5s;
 }
 
+section #favourite{
+  margin-bottom: 20rem;  
+}
+
+
 .copyright{
     text-align: center;
     padding: 12rem;
@@ -438,7 +458,7 @@ header {
 
 /*play_page*/
 .play-container{
-   position: relative;;
+   position: relative;
    min-height: 540px;
    margin-top: 5rem !important; 
 }
@@ -689,6 +709,7 @@ header {
     .video-box{
         width: 94%;
     }
+
 }
 
 @media screen and (max-width: 408px) {

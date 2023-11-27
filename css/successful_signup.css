@@ -1,0 +1,24 @@
+.login-box{
+    height: 10rem !important;
+    text-align: center;
+}
+
+.copyright{
+    margin-top: 34rem !important;
+}
+
+.signin{
+    color: white;
+    text-decoration: none;
+    padding-top: 0.22rem;
+}
+
+.signin:hover{
+    color: gray;
+    border-color: none;
+}
+
+.signin:focus,.signin:active {
+    outline: none !important;
+    box-shadow: none;
+}
