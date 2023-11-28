@@ -50,27 +50,27 @@ session_start();
             <!--navbar-->
             <div class="navbar">
 
-                <a href="#home" class="nav-link">
+                <a href="landing_page.php/#home" class="nav-link">
                     <i class="bi bi-house"></i>
                     <span class="nav-link-title">Home</span>
                 </a>
 
-                <a href="#popular" class="nav-link">
+                <a href="landing_page.php/#popular" class="nav-link">
                     <i class="bi bi-star"></i>
                     <span class="nav-link-title">Popular</span>
                 </a>
 
-                <a href="#movies" class="nav-link">
+                <a href="movies.php" class="nav-link">
                     <i class="bi bi-camera-reels"></i>
                     <span class="nav-link-title">Movies</span>
                 </a>
 
-                <a href="#series" class="nav-link">
+                <a href="series.php" class="nav-link">
                     <i class="bi bi-tv"></i>
                     <span class="nav-link-title">Series</span>
                 </a>
 
-                <a href="#favourite" class="nav-link">
+                <a href="favourite.php" class="nav-link">
                     <i class="bi bi-heart"></i>
                     <span class="nav-link-title">Favourite</span>
                 </a>
@@ -104,77 +104,14 @@ session_start();
         <section class="home container" id="home">
 
             <!--movies-->
-            <section class="movies container" id="movies" style="padding-top: 0rem;">
+            <section class="movies container" id="movies">
 
                 <div class="heading">
                     <h2 class="heading-title">Movies</h2>
                 </div>
-                <div class="movies-content">
+                <div class="movies-content" id="moviesContent" style="padding-top: 1rem;">
+                    <div class="movie-box">
 
-                    <div class="movie-box" id="m1">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="play_page.html" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="movie-box" id="m2">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="#" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="movie-box" id="m3">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="#" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="movie-box" id="m4">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="#" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="movie-box" id="m5">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="#" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="movie-box" id="m6">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="#" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
                     </div>
 
                 </div>
@@ -182,12 +119,20 @@ session_start();
             </section>
         </section>
 
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center" id="pagination">
 
+            </ul>
+        </nav>
+        
 
     </div>
+    
+    
 
     <!--copyright-->
     <div class="copyright">
+        
         <i class="bi bi-c-circle"></i>
         <span>HDMovies All Rights Reserved</span>
     </div>
@@ -198,7 +143,7 @@ session_start();
         crossorigin="anonymous"></script>
 
     <script src="../js/main.js"></script>
-    <script src="../js/popular.js"></script>
+    <script src="../js/movies.js"></script>
 </body>
 
 </html>
