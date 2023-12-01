@@ -399,7 +399,7 @@ header {
 }
 
 .form-select{
-    min-width: 25% !important;
+    min-width: 15% !important;
     width: auto;
 }
 
@@ -679,7 +679,7 @@ section #favourite{
     }
 
     .movies-content{
-        grid-template-columns: repeat(auto-fit, minmax(214px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(214px, 1fr));
     }
 }
 
@@ -719,15 +719,6 @@ section #favourite{
     }
 }
 
-@media screen and (max-width: 845px) {
-    .navbar {
-        display: none;
-    }
-
-    .dropdown {
-        display: block;
-    }
-}
 
 @media screen and (max-width: 768px) {
     .nav{
@@ -768,7 +759,17 @@ section #favourite{
 @media screen and (max-width: 705px) {
     /*.search-box{
 
-    } and user*/
+    } and user*/   
+}
+
+@media screen and (max-width:650px) {
+    .navbar {
+        display: none;
+    }
+
+    .dropdown {
+        display: block;
+    }
 }
 
 @media screen and (max-width: 514px) {
@@ -828,9 +829,11 @@ section #favourite{
     }
 
     .movies-content{
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 1rem;
     }
+
+    
 }
 
 @media screen and (max-width: 370px){

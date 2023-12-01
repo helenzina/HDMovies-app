@@ -1,0 +1,21 @@
+.fav-btn .bi{
+    font-size: 2rem;
+    display: flex;
+    position: static;
+}
+
+.fav-btn{
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+}
+
+@media screen and (max-width:850px) {
+    .navbar {
+        display: none !important;
+    }
+
+    .dropdown {
+        display: block !important;
+    }
+}

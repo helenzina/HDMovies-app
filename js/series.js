@@ -37,8 +37,8 @@ async function handleSearch() {
   if (query === '') {
     selectedPage = 1;
     try {
-      const movies = await fetchMoviesWithPerPage('movie', currentPage);
-      showMedia(movies.results, 'movie');
+      const movies = await fetchMoviesWithPerPage('tv', currentPage);
+      showMedia(movies.results, 'tv');
       totalPages = Math.ceil(movies.total_results / moviesPerPage);
       renderPagination();
     } catch (error) {
@@ -48,7 +48,7 @@ async function handleSearch() {
     selectedPage = 1;
     try {
       const searchResults = await searchMovies(query);
-      showMedia(searchResults.results, 'movie');
+      showMedia(searchResults.results, 'tv');
       totalPages = Math.ceil(searchResults.total_results / moviesPerPage);
       renderPagination();
     } catch (error) {
@@ -68,11 +68,11 @@ async function searchMovies(query) {
 document.addEventListener('DOMContentLoaded', async function () {
   try {
     // Fetch genre names for movies
-    const movieGenres = await fetchGenres('movie');
+    const movieGenres = await fetchGenres('tv');
 
     // Fetch and display the initial page of movies
-    const movies = await fetchMoviesWithPerPage('movie', currentPage);
-    showMedia(movies.results, 'movie');
+    const movies = await fetchMoviesWithPerPage('tv', currentPage);
+    showMedia(movies.results, 'tv');
     totalPages = movies.total_pages;
 
     // Render pagination links
@@ -171,11 +171,11 @@ async function changePage(direction) {
       const selectedYear = YEAR_SELECT.value;
 
       if (query === '') {
-        const movies = await fetchMoviesByGenreAndYear('movie', currentPage, selectedGenre, selectedYear);
-        showMedia(movies.results, 'movie');
+        const movies = await fetchMoviesByGenreAndYear('tv', currentPage, selectedGenre, selectedYear);
+        showMedia(movies.results, 'tv');
       } else {
         const searchResults = await searchMovies(query);
-        showMedia(searchResults.results, 'movie');
+        showMedia(searchResults.results, 'tv');
       }
 
       renderPagination();
@@ -230,42 +230,26 @@ function showMedia(data, mediaType) {
     document.body.style.minHeight = "100rem";
     document.querySelector('.copyright').style.padding = '12rem';
   }
-  
 
   data.forEach(media => {
-    const { title, name, poster_path, genre_ids, overview, vote_average } = media;
+    const { title, name, poster_path, genre_ids } = media;
 
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
-
-    const genreNames = getGenreNamesString(genre_ids, mediaType);
 
     movieBox.innerHTML = `
             <img src="${IMG_URL + poster_path}" class="movie-box-img">
             <div class="box-text">
                 <h2 class="movie-title">${title || name}</h2>
-                <span class="movie-type">${genreNames}</span>
+                <span class="movie-type">${getGenreNamesString(genre_ids, mediaType)}</span>
                 <a href="#" class="play-btn">
                     <i class="bi bi-play-circle-fill card-icon"></i>
                 </a>
                 <a href="#" class="fav-btn">
-                    <i class="bi bi-plus-circle card-icon"></i>
+                <i class="bi bi-plus-circle card-icon"></i>
                 </a>
             </div>
-
         `;
-
-        const playBtn = movieBox.querySelector('.play-btn');
-        playBtn.addEventListener('click', () => {
-            // Get the movie data from the data attributes
-            const movieData = { title, poster_path, genreNames, overview, vote_average};
-    
-            // Convert the movieData object to a JSON string
-            const movieDataJson = JSON.stringify(movieData);
-    
-            // Redirect to another page and pass the movie data as a query parameter
-            window.location.href = `play_page.html?movieData=${encodeURIComponent(movieDataJson)}`;
-        });
 
     moviesContent.appendChild(movieBox);
   });
@@ -299,7 +283,7 @@ const YEAR_SELECT = document.querySelector('.select-year');
 document.addEventListener('DOMContentLoaded', async function () {
   try {
     // Fetch genre names for movies
-    const movieGenres = await fetchGenres('movie');
+    const movieGenres = await fetchGenres('tv');
     
     // Populate genre dropdown
     populateSelect(GENRE_SELECT, movieGenres);
@@ -307,8 +291,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     populateYears(YEAR_SELECT);
 
     // Fetch and display the initial page of movies
-    const movies = await fetchMoviesWithPerPage('movie', currentPage);
-    showMedia(movies.results, 'movie');
+    const movies = await fetchMoviesWithPerPage('tv', currentPage);
+    showMedia(movies.results, 'tv');
     totalPages = movies.total_pages;
 
     // Render pagination links
@@ -343,7 +327,7 @@ async function populateYears(selectElement) {
   try {
     // Fetch available years from the API
     const years = await fetchAvailableYears();
-    
+
     // Clear existing options
     selectElement.innerHTML = '';
 
@@ -413,8 +397,9 @@ async function handleYearChange() {
 
 async function fetchAndShowMovies(genreId, year) {
   try {
-    const movies = await fetchMoviesByGenreAndYear('movie', currentPage, genreId, year);
-    showMedia(movies.results, 'movie');
+    const movies = await fetchMoviesByGenreAndYear('tv', currentPage, genreId, year);
+
+    showMedia(movies.results, 'tv');
     totalPages = movies.total_pages;
 
     // Render pagination links
@@ -432,7 +417,7 @@ async function fetchMoviesByGenreAndYear(mediaType, page, genreId, year) {
   }
 
   if (year) {
-    apiUrl += `&primary_release_year=${year}`;
+    apiUrl += `&first_air_date_year=${year}`;
   }
 
   const response = await fetch(apiUrl);

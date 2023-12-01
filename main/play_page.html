@@ -73,21 +73,33 @@
 
       </div>
 
-      <!--search-->
-      <div class="search-box">
-        <input type="search" name="" id="search-input" placeholder="Search...">
-        <i class="bi bi-search"> </i>
-      </div>
       <!--user-->
-      <a href="#" class="user">
-        <img src="/////profile pic from db/////" alt="" class="user-img">
-      </a>
+      <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+      <div class="sub-menu" id="subMenu">
+        <div class="user-info">
+          <h4>///username///</h4>
+        </div>
+        <hr>
+        <a href="profile.php" class="sub-menu-link">
+          <span style="width: 100%;">
+            <i class="bi bi-person-circle"></i>
+            Profile
+          </span> 
+          <span> > </span>
+        </a>
+        <a href="logout.php" class="sub-menu-link">
+          <span style="width: 100%;">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </span>
+          <span> > </span>
+        </a>
     </div>
 
   </header>
 
   <div class="play-container container">
-    <img src="../images/logotext black.png" alt="" class="play-img">
+    <img src="///image///" alt="" class="play-img">
     <div class="play-text">
         <h2>///title///</h2>
         <div class="rating" id="vote_average">
@@ -136,6 +148,9 @@
 
   <script src="../js/main.js"></script>
   <script src="../js/popular.js"></script>
+  <script src="../js/movies.js"></script>
+  <script src="../js/series.js"></script>
+  <script src="../js/play.js"></script>
 </body>
 
 </html>
