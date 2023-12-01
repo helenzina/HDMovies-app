@@ -62,6 +62,7 @@ body{
     max-width: 1068px;
     margin: auto;
     width: 100%;
+    position: relative;
 }
 
 header {
@@ -81,7 +82,7 @@ header {
 }
 
 .logo{
-    margin: 0 auto 0 0;
+    margin: auto 0;
 }
 
 .logo img{
@@ -151,9 +152,10 @@ header {
 }
 */
 
-/*user profile*/
+/*user dropdown*/
 .user{
     display: flex;
+    position: relative;
 }
 
 .user-img{
@@ -163,10 +165,68 @@ header {
     object-fit: cover;
     object-position: center;
     margin-right: 1rem;
+    cursor: pointer;
 }
 
-/*user settings*/
+.sub-menu{
+    background: #141414;
+    padding: 20px;
+    margin: 10px;
+}
 
+.user-info{
+    display: flex;
+    align-items: center;
+}
+
+.user-info h4{
+    font-size: 500;
+}
+
+.sub-menu {
+    display: none;
+    overflow: hidden;
+    transition: max-height 0.5s;
+    position: absolute;  /* Change from fixed to absolute */
+    top: 65%;          /* Position below the user image */
+    right: 0;
+    z-index: 100000;
+    width: max-content;  /* Set the width to match the content */
+}
+
+.sub-menu.open-menu{
+    display: block;
+}
+
+.sub-menu hr{
+    border: 0;
+    height: 1px;
+    width: 100%;
+    background: var(--text-color);
+    margin: 15px 0 10px;
+}
+
+.sub-menu-link{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+    margin: 12px 0;
+}
+
+.sub-menu-link span{
+    font-size: 1.2rem;
+    transition: transform 0.5s;
+}
+
+.sub-menu-link:hover span{
+    color: gray;
+    transform: translateX(1px);
+}
+
+.sub-menu-link > .bi:hover{
+    color: gray;
+}
 
 .dropdown-box{
     display: none;
@@ -178,21 +238,8 @@ header {
     color: #ffffff;
     border: none;
     font-size: 0.7rem;
-    margin: 1rem;
+    margin: auto;
     cursor: pointer;
-    margin-right: 4rem;
-}
-
-.dropdown2{
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-menu2{
-    display: none;
-    position: absolute;
-    z-index: 1;
-    font-size: 0.7rem;
 }
 
 .dropdown-menu{
@@ -202,6 +249,10 @@ header {
     font-size: 0.7rem;
     color: #ffffff;
     text-align: center;
+}
+
+.open-dropdown{
+    display: block;
 }
 
 .dropdown-menu .dropdown-item{
@@ -220,12 +271,13 @@ header {
     color: var(--hover-color);
 }
 
-
 .navbar{
     position: relative;
     margin: auto;
     display: flex;
     row-gap: 2.1rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .nav-link{
@@ -346,6 +398,11 @@ header {
     font-weight: 500;
 }
 
+.form-select{
+    min-width: 25% !important;
+    width: auto;
+}
+
 /*cards*/
 .card{
     background: #141414;
@@ -400,6 +457,8 @@ header {
     position: relative;
     width: 100%;
     height: 23.75rem;
+    min-width: 200px;
+    min-height: 200px;
     overflow: hidden;
     border-radius: 1rem;
 }
@@ -442,12 +501,23 @@ header {
 
 .movies .heading{
     padding: 10px 14px;
+    justify-content: unset;
+    gap: 0.5rem;
+}
+
+.select-genre{
+    margin-left: auto;
+}
+
+.select-year{
+    margin: auto 0;
 }
 
 .movies-content{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
+    padding-top: 1rem;
 }
 
 .movies-content .movie-box:hover .movie-box-img{
@@ -455,14 +525,22 @@ header {
     transition: 0.5s;
 }
 
+.nomovies {
+    font-size: 1.5rem;
+}
+
 section #favourite{
   margin-bottom: 20rem;  
 }
 
-
 .copyright{
     text-align: center;
     padding: 12rem;
+}
+
+.copy_land{
+    text-align: center;
+    padding: 6rem;
 }
 
 /*play_page*/

@@ -11,4 +11,17 @@ function pauseVid() {
     document.getElementById("myvideo").pause(); 
   } 
 
+function showMenu(){
+  document.getElementById("subMenu").classList.toggle("open-menu");
+}
+
+function showDropdown() {
+  document.getElementById("dropMenu").classList.toggle("open-dropdown");
+
+}
+
+function hideDropdown() {
+  document.getElementById("dropMenu").classList.remove("open-dropdown");
+}
+
 

@@ -35,16 +35,16 @@ session_start();
         <img src="../images/logotext red.png" alt="">
       </a>
       <div class="dropdown-box dropdown">
-        <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+        <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()" data-bs-toggle="dropdown"
           aria-expanded="false">
           <span class="dropdown-text">Browse</span>
         </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-          <li><a class="dropdown-item" href="#home">Home</a></li>
-          <li><a class="dropdown-item" href="#popular">Popular</a></li>
-          <li><a class="dropdown-item" href="#movies">Movies</a></li>
-          <li><a class="dropdown-item" href="#series">Series</a></li>
-          <li><a class="dropdown-item" href="#favourite">Favourite</a></li>
+        <ul class="dropdown-menu" id="dropMenu" aria-labelledby="dropdownMenuButton1">
+          <li><a class="dropdown-item" href="#home" onclick="hideDropdown()">Home</a></li>
+          <li><a class="dropdown-item" href="#popular" onclick="hideDropdown()">Popular</a></li>
+          <li><a class="dropdown-item" href="movies.php" onclick="hideDropdown()">Movies</a></li>
+          <li><a class="dropdown-item" href="series.php" onclick="hideDropdown()">Series</a></li>
+          <li><a class="dropdown-item" href="favourite.php" onclick="hideDropdown()">Favourite</a></li>
         </ul>
       </div>
       <!--navbar-->
@@ -77,21 +77,38 @@ session_start();
 
       </div>
 
-      <!--search-->
-      <div class="search-box">
-        <input type="search" name="" id="search-input" placeholder="Search...">
-        <i class="bi bi-search"> </i>
-      </div>
-      <!--user-->
 
-      <a href="#" class="user">
-          <img src="/////profile pic from db/////" class="user-img" id="profileImage">
+      <!--user-->
+     <!--
+      <img src="/////profile pic from db/////" class="user-img" id="profileImage">
         <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <li><a href="profile.php" class="dropdown-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
           <li><a href="logout.php" class="dropdown-item"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
           </li>
         </ul>
-      </a>
+      -->
+        <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+          <div class="sub-menu" id="subMenu">
+            <div class="user-info">
+              <h4>///username///</h4>
+            </div>
+            <hr>
+            <a href="profile.php" class="sub-menu-link">
+              <span style="width: 100%;">
+                <i class="bi bi-person-circle"></i>
+                Profile
+              </span> 
+              <span> > </span>
+            </a>
+            <a href="logout.php" class="sub-menu-link">
+              <span style="width: 100%;">
+                <i class="bi bi-box-arrow-right"></i>
+                Logout
+              </span>
+              <span> > </span>
+            </a>
+        </div>
+
 
 
     </div>
@@ -171,7 +188,7 @@ session_start();
         </div>
 
     </section>
-
+    
 
     <!--favourite-->
     <!--
@@ -212,7 +229,7 @@ session_start();
 -->
 
   <!--copyright-->
-  <div class="copyright">
+  <div class="copy_land">
     <i class="bi bi-c-circle"></i>
     <span>HDMovies All Rights Reserved</span>
   </div>

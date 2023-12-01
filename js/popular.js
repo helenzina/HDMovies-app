@@ -4,9 +4,6 @@ const IMG_URL = "https://image.tmdb.org/t/p/w500/";
 const SEARCH_URL = BASE_URL + '/search/multi?' + API_KEY;
 
 
-const searchbox = document.getElementById('search-box');
-const search = document.getElementById('search-input');
-
 // Assuming you have three carousels with IDs carouselExampleIndicators1, carouselExampleIndicators2, and carouselExampleIndicators3
 const carousels = document.querySelectorAll('.carousel');
 
@@ -129,21 +126,6 @@ function getGenreNamesString(genreIds, mediaType) {
   }
 }
 
-searchbox.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const searchTerm = search.value;
-  if (searchTerm) {
-    getMediaSearchResults(searchTerm);
-  } else {
-    getMedia('movie');
-  }
-});
-
-function getMediaSearchResults(searchTerm) {
-  const SEARCH_URL = BASE_URL + `/search/multi?${API_KEY}&query=${searchTerm}`;
-
-  fetchMovies(SEARCH_URL, 'search');
-}
 
 function getColor(vote) {
   if (vote >= 8) {
