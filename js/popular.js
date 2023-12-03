@@ -46,6 +46,17 @@ function fetchMovies(url, mediaType) {
     });
 }
 
+async function fetchCastDetails(mediaType, mediaId) {
+  try {
+    const CAST_URL = `${BASE_URL}${mediaType}/${mediaId}/credits?${API_KEY}`;
+    const response = await fetch(CAST_URL);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching cast details:', error.message);
+    throw new Error('Error fetching cast details');
+  }
+}
+
 function showMedia(data, mediaType) {
   const carousel = carousels[mediaType === 'movie' ? 0 : 1];
 
@@ -71,8 +82,8 @@ function showMedia(data, mediaType) {
     // Iterate through media items in the current set
     for (let j = i; j < i + cardsPerItem && j < data.length; j++) {
       const media = data[j];
-      const { title, name, overview, poster_path, genre_ids, release_date, vote_average } = media;
-
+      const { title, name, overview, poster_path, genre_ids, release_date, vote_average, first_air_date } = media;
+      const genreNames = getGenreNamesString(genre_ids, mediaType);
       const voteColor = getColor(vote_average);
 
       // Create a card for each media item
@@ -85,10 +96,14 @@ function showMedia(data, mediaType) {
         <div class="card-body">
           <section class="d-flex justify-content-between">
             <div>
-              <i class="bi bi-play-circle-fill card-icon"></i>
+            <a href="#" class="my-play-btn">
+            <i class="bi bi-play-circle-fill card-icon"></i>
+            </a>
             </div>
             <div>
-              <i class="bi bi-plus-circle card-icon"></i>
+            <a href="#" class="my-fav-btn">
+            <i class="bi bi-plus-circle card-icon"></i>
+            </a>
             </div>
           </section>
           <span class="d-flex justify-content-between">
@@ -98,6 +113,46 @@ function showMedia(data, mediaType) {
           <p class="m-0 card-text text-white" style="font-size: 0.8rem">${getGenreNamesString(genre_ids, mediaType)}</p>
         </div>
       `;
+
+      const playBtn = mediaCard.querySelector('.my-play-btn');
+      playBtn.addEventListener('click', async () => {
+        // Assuming media has an 'id' property representing the movie ID
+        const mediaId = media.id;
+      
+        try {
+          // Fetch cast details before redirecting to the play page
+          const castDetails = await fetchCastDetails(mediaType, mediaId);
+          const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
+          
+          const movieYear = (release_date ? new Date(release_date).getFullYear() : '') 
+          || (first_air_date ? new Date(first_air_date).getFullYear() : '');
+
+          const titleOrName= title || name;
+
+          const movieData = {
+            titleOrName,
+            poster_path,
+            genreNames,
+            overview,
+            vote_average,
+            movieYear,
+            cast: castNames,
+          };
+      
+          const movieDataJson = JSON.stringify(movieData);
+      
+          // Store movieData in localStorage
+          localStorage.setItem('movieData', movieDataJson);
+      
+          const movieTitle = encodeURIComponent(movieData.titleOrName);
+      
+          // Redirect to another page with only the title in the URL
+          window.location.href = `play_page.html?title=${movieTitle}&year=${movieYear}`;
+        } catch (error) {
+          console.error('Error:', error.message);
+        }
+      });
+
 
       // Append the card to the media section
       mediaSection.appendChild(mediaCard);

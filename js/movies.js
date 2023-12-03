@@ -204,6 +204,17 @@ async function fetchMoviesWithPerPage(mediaType, page) {
   return await response.json();
 }
 
+async function fetchCastDetails(mediaType, mediaId) {
+  try {
+    const CAST_URL = `${BASE_URL}${mediaType}/${mediaId}/credits?${API_KEY}`;
+    const response = await fetch(CAST_URL);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching cast details:', error.message);
+    throw new Error('Error fetching cast details');
+  }
+}
+
 function showMedia(data, mediaType) {
   moviesContent.innerHTML = '';
 
@@ -233,11 +244,11 @@ function showMedia(data, mediaType) {
   
 
   data.forEach(media => {
-    const { title, name, poster_path, genre_ids, overview, vote_average } = media;
-
+    const { title, name, poster_path, genre_ids, overview, vote_average, release_date } = media;
+ 
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
-
+    
     const genreNames = getGenreNamesString(genre_ids, mediaType);
 
     movieBox.innerHTML = `
@@ -256,15 +267,39 @@ function showMedia(data, mediaType) {
         `;
 
         const playBtn = movieBox.querySelector('.play-btn');
-        playBtn.addEventListener('click', () => {
-            // Get the movie data from the data attributes
-            const movieData = { title, poster_path, genreNames, overview, vote_average};
-    
-            // Convert the movieData object to a JSON string
+        playBtn.addEventListener('click', async () => {
+          // Assuming media has an 'id' property representing the movie ID
+          const mediaId = media.id;
+        
+          try {
+            // Fetch cast details before redirecting to the play page
+            const castDetails = await fetchCastDetails('movie', mediaId);
+            const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
+            const movieYear = release_date ? new Date(release_date).getFullYear() : '';
+            const titleOrName= title;
+        
+            const movieData = {
+              titleOrName,
+              poster_path,
+              genreNames,
+              overview,
+              vote_average,
+              movieYear,
+              cast: castNames, // Include cast information in movieData
+            };
+        
             const movieDataJson = JSON.stringify(movieData);
-    
-            // Redirect to another page and pass the movie data as a query parameter
-            window.location.href = `play_page.html?movieData=${encodeURIComponent(movieDataJson)}`;
+        
+            // Store movieData in localStorage
+            localStorage.setItem('movieData', movieDataJson);
+        
+            const movieTitle = encodeURIComponent(movieData.titleOrName);
+        
+            // Redirect to another page with only the title in the URL
+            window.location.href = `play_page.html?title=${movieTitle}&year=${movieYear}`;
+          } catch (error) {
+            console.error('Error:', error.message);
+          }
         });
 
     moviesContent.appendChild(movieBox);
