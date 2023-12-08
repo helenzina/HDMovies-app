@@ -311,11 +311,11 @@ header {
     justify-content: center;
 }
 
-.home-video{
+.home-video {
     position: absolute;
-    display: flex;
     max-width: 100%;
-    align-items: center;
+    width: 100%;
+    height: auto;
     border-radius: 0.5rem;
     z-index: -10;
 }
@@ -335,7 +335,7 @@ header {
 }
 
 /*buttons*/
-.watch-btn{
+.watch-btn {
     display: flex;
     align-items: center;
     column-gap: 0.8rem;
@@ -348,7 +348,7 @@ header {
     left: 0.8rem;
 }
 
-.watch-btn .bi{
+.watch-btn .bi {
     font-size: 1.5rem;
     background: var(--text-color);
     color: var(--body-color);
@@ -358,17 +358,16 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
     cursor: pointer;
 }
 
 .watch-btn .text {
+    font-size: 1rem; /* Adjust the font size for the text */
     color: var(--text-color);
-    font-size: 1rem;
     font-weight: 400;
 }
 
-.watch-btn:hover .bi:hover{
+.watch-btn:hover .bi:hover {
     background-color: gray;
 }
 
@@ -766,7 +765,7 @@ section #favourite{
 }
 
 .save-cancel{
-    justify-content: center;
+    justify-content: flex-end;
     display: flex;
     gap: 0.5rem;
 }
@@ -823,6 +822,21 @@ section #favourite{
         font-size: 1.6rem;
     }
 
+    .watch-btn {
+        padding: 0.4rem 0.5rem;
+        bottom: 2rem;
+    }
+
+    .watch-btn .bi {
+        font-size: 1rem;
+        width: 1.5rem; 
+        height: 1.5rem;
+    }
+
+    .watch-btn .text {
+        font-size: 0.8rem; 
+    }
+
     .watch-btn span{
         font-size: 0.9rem;
     }
@@ -848,7 +862,7 @@ section #favourite{
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
     .nav{
         padding: 0.6875rem 0;
     }
@@ -863,6 +877,15 @@ section #favourite{
 
     .home-img{
         object-position: left;
+    }
+
+    .home-title{
+        font-size: 1.5rem;
+        bottom: 7rem;
+    }
+
+    .watch-btn {
+        bottom: 3rem;
     }
 
     .movie-type{
@@ -886,8 +909,9 @@ section #favourite{
         bottom: 10rem;
         right: 2rem;
     }
+
     .list-group {
-        display: flex;
+        display: contents;
         flex-direction: column;
         align-items: stretch;
     }
@@ -899,6 +923,17 @@ section #favourite{
     } and user*/   
 }
 
+@media screen and (max-width: 712px) {
+    .home-title{
+        font-size: 1.4rem;
+        bottom: 8rem;
+    }
+
+    .watch-btn {
+        bottom: 4rem;
+    }
+}
+
 @media screen and (max-width: 650px) {
     .navbar {
         display: none;
@@ -906,6 +941,36 @@ section #favourite{
 
     .dropdown {
         display: block;
+    }
+}
+
+@media screen and (max-width: 625px) {
+    .home-title{
+        bottom: 9rem;
+    }
+
+    .watch-btn {
+        bottom: 5rem;
+    }
+
+    .search-box{
+        max-width: 60%;
+        width: 100%;
+        order: 3;
+        grid-column-start: 1;
+        grid-column-end: 3;
+        position: relative;
+    }
+
+}
+
+@media screen and (max-width: 550px) {
+    .home-title{
+        bottom: 10rem;
+    }
+
+    .watch-btn {
+        bottom: 6rem;
     }
 }
 
@@ -934,6 +999,34 @@ section #favourite{
         width: 94%;
     }
 
+    .home-title{
+        bottom: 8rem;
+    }
+
+    .watch-btn {
+        bottom: 4rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .home-title{
+        bottom: 9rem;
+    }
+
+    .watch-btn {
+        padding: 0.35rem 0.35rem;
+        bottom: 5rem;
+    }
+
+    .watch-btn .bi {
+        font-size: 1rem;
+        width: 1.4rem; 
+        height: 1.4rem;
+    }
+
+    .watch-btn .text {
+        font-size: 0.7rem; 
+    }
 }
 
 @media screen and (max-width: 408px) {
@@ -942,19 +1035,10 @@ section #favourite{
     }
 
     .nav{
-        display: grid;
+        display: flex;
         grid-template-columns: 1fr;
         grid-template-rows: 1fr 1fr;
         row-gap: 5px;
-    }
-
-    .search-box{
-        max-width: 100%;
-        width: 100%;
-        border-radius: 4px;
-        order: 3;
-        grid-column-start: 1;
-        grid-column-end: 3;
     }
 
     .home, .play-container{
@@ -970,7 +1054,22 @@ section #favourite{
         gap: 1rem;
     }
 
-    
+    .logo img{
+        width: 8rem;
+    }
+
+    .home-title{
+        bottom: 7rem;
+        font-size: 1.3rem;
+    }
+
+    .watch-btn {
+        bottom: 4rem;
+    }
+
+    .watch-btn .text {
+        font-size: 0.7rem; 
+    }
 }
 
 @media screen and (max-width: 370px){
@@ -981,13 +1080,26 @@ section #favourite{
     .movie-box{
         height: 17.82rem;
     }
-
+/*
     .user-img, .watch-btn .bi{
         width: 2.2rem;
         height: 2.2rem;
     }
-
+*/
     .overview p{
         text-align: justify;
+    }
+
+    .home-title{
+        bottom: 5rem;
+        font-size: 1.3rem;
+    }
+
+    .watch-btn {
+        bottom: 2rem;
+    }
+
+    .watch-btn .text {
+        font-size: 0.7rem; 
     }
 }

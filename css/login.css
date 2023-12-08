@@ -133,3 +133,11 @@ img{
     text-align: center;
     margin-top: 14rem;
 }
+
+.forgot{
+    color: white;
+}
+
+.forgot:hover{
+    color: gray;
+}
