@@ -10,20 +10,29 @@
     right: 0.8rem;
 }
 
+.page-link{
+    color: red;
+}
+
+.page-item.active > .page-link{
+    background-color: red;
+    color: white;
+    border-color: red;
+}
+
 .copyright{
     padding: 4rem !important;
 }
 
-@media screen and (max-width: 888px){
-
+.bi-heart-fill {
+    color: red; 
 }
 
-@media screen and (max-width: 851px) {
-    .movies{
+@media screen and (max-width: 888px){
+    .movies .heading{
         margin-top: 1rem;
     }
 }
-
 
 @media screen and (max-width: 850px) {
     .navbar {

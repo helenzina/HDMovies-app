@@ -254,11 +254,43 @@ function showMedia(data, mediaType) {
                 <a href="#" class="play-btn">
                     <i class="bi bi-play-circle-fill card-icon"></i>
                 </a>
-                <a href="#" class="fav-btn">
-                <i class="bi bi-plus-circle card-icon"></i>
-                </a>
+                <a href="#" class="fav-btn" data-movie-id="${media.id}" data-is-favorite="false">
+                <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_${media.id}"></i>
+                <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${media.id}"></i>
+              </a>
             </div>
         `;
+
+        const favBtn = movieBox.querySelector('.fav-btn');
+        const plusIcon = favBtn.querySelector('.bi-plus-circle');
+        const heartIcon = favBtn.querySelector('.bi-heart-fill');
+        heartIcon.style.display = 'none';
+    
+        favBtn.dataset.movieId = media.id;
+        plusIcon.id = `plusIcon_${media.id}`;
+        heartIcon.id = `heartIcon_${media.id}`;
+    
+        favBtn.addEventListener('click', async () => {
+          const movieId = favBtn.dataset.movieId;
+          const isFavorite = favBtn.dataset.isFavorite === 'true';
+        
+          const plusIcon = document.getElementById(`plusIcon_${movieId}`);
+          const heartIcon = document.getElementById(`heartIcon_${movieId}`);
+    
+        
+          if (!isFavorite) {
+            plusIcon.style.display='none';
+            heartIcon.style.display='flex';
+          } else {
+            plusIcon.style.display='flex';
+            heartIcon.style.display='none';
+          }
+        
+          // Toggle the favorite status
+          favBtn.dataset.isFavorite = (!isFavorite).toString();
+        
+          // You can perform additional actions based on the favorite status here
+        });
 
         const playBtn = movieBox.querySelector('.play-btn');
         playBtn.addEventListener('click', async () => {
@@ -291,7 +323,7 @@ function showMedia(data, mediaType) {
             const movieTitle = encodeURIComponent(movieData.titleOrName);
         
             // Redirect to another page with only the title in the URL
-            window.location.href = `play_page.html?title=${movieTitle}&year=${movieYear}`;
+            window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
           } catch (error) {
             console.error('Error:', error.message);
           }

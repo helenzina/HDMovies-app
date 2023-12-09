@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-
 function renderPagination() {
   paginationContainer.innerHTML = '';
 
@@ -130,7 +129,7 @@ function renderPagination() {
 function createPaginationButton(label, value, isDisabled) {
   const pageItem = document.createElement('li');
   pageItem.classList.add('page-item');
-  
+
 
   // Add "active" class to the selected page
   if (value === selectedPage) {
@@ -222,89 +221,114 @@ function showMedia(data, mediaType) {
     // Display a message when there are no search results
     moviesContent.innerHTML = `
       <section class="movies container" id="movies"> 
-      <br/>       
+        <br/>       
         <p class="nomovies">No movies found.</p>
-          <div class="movies-content" id="moviesContent">
-              
-           <div class="movie-box">
-  
-           </div> 
-          </div>
+        <div class="movies-content" id="moviesContent">
+          <div class="movie-box"></div> 
+        </div>
       </section>`;
-  
+
     // Adjust the height of the page
     document.body.style.minHeight = "50rem";
     document.querySelector('.copyright').style.padding = '0rem';
-  
+
     return;
-  } else{
+  } else {
     document.body.style.minHeight = "100rem";
     document.querySelector('.copyright').style.padding = '12rem';
   }
-  
 
   data.forEach(media => {
     const { title, name, poster_path, genre_ids, overview, vote_average, release_date } = media;
- 
+
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
-    
+
     const genreNames = getGenreNamesString(genre_ids, mediaType);
 
+
     movieBox.innerHTML = `
-            <img src="${IMG_URL + poster_path}" class="movie-box-img">
-            <div class="box-text">
-                <h2 class="movie-title">${title || name}</h2>
-                <span class="movie-type">${genreNames}</span>
-                <a href="#" class="play-btn">
-                    <i class="bi bi-play-circle-fill card-icon"></i>
-                </a>
-                <a href="#" class="fav-btn">
-                    <i class="bi bi-plus-circle card-icon"></i>
-                </a>
-            </div>
+      <img src="${IMG_URL + poster_path}" class="movie-box-img">
+      <div class="box-text">
+        <h2 class="movie-title">${title || name}</h2>
+        <span class="movie-type">${genreNames}</span>
+        <a href="#" class="play-btn">
+          <i class="bi bi-play-circle-fill card-icon"></i>
+        </a>
+        <a href="#" class="fav-btn" data-movie-id="${media.id}" data-is-favorite="false">
+          <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_${media.id}"></i>
+          <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${media.id}"></i>
+        </a>
+      </div>`;
 
-        `;
+    const favBtn = movieBox.querySelector('.fav-btn');
+    const plusIcon = favBtn.querySelector('.bi-plus-circle');
+    const heartIcon = favBtn.querySelector('.bi-heart-fill');
+    heartIcon.style.display = 'none';
 
-        const playBtn = movieBox.querySelector('.play-btn');
-        playBtn.addEventListener('click', async () => {
-          // Assuming media has an 'id' property representing the movie ID
-          const mediaId = media.id;
-        
-          try {
-            // Fetch cast details before redirecting to the play page
-            const castDetails = await fetchCastDetails('movie', mediaId);
-            const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
-            const movieYear = release_date ? new Date(release_date).getFullYear() : '';
-            const titleOrName= title;
-        
-            const movieData = {
-              titleOrName,
-              poster_path,
-              genreNames,
-              overview,
-              vote_average,
-              movieYear,
-              cast: castNames, // Include cast information in movieData
-            };
-        
-            const movieDataJson = JSON.stringify(movieData);
-        
-            // Store movieData in localStorage
-            localStorage.setItem('movieData', movieDataJson);
-        
-            const movieTitle = encodeURIComponent(movieData.titleOrName);
-        
-            // Redirect to another page with only the title in the URL
-            window.location.href = `play_page.html?title=${movieTitle}&year=${movieYear}`;
-          } catch (error) {
-            console.error('Error:', error.message);
-          }
-        });
+    favBtn.dataset.movieId = media.id;
+    plusIcon.id = `plusIcon_${media.id}`;
+    heartIcon.id = `heartIcon_${media.id}`;
+
+    favBtn.addEventListener('click', async () => {
+      const movieId = favBtn.dataset.movieId;
+      const isFavorite = favBtn.dataset.isFavorite === 'true';
+    
+      const plusIcon = document.getElementById(`plusIcon_${movieId}`);
+      const heartIcon = document.getElementById(`heartIcon_${movieId}`);
+
+    
+      if (!isFavorite) {
+        plusIcon.style.display='none';
+        heartIcon.style.display='flex';
+      } else {
+        plusIcon.style.display='flex';
+        heartIcon.style.display='none';
+      }
+    
+      // Toggle the favorite status
+      favBtn.dataset.isFavorite = (!isFavorite).toString();
+    
+      // You can perform additional actions based on the favorite status here
+    });
+    
+
+    const playBtn = movieBox.querySelector('.play-btn');
+    playBtn.addEventListener('click', async () => {
+      const mediaId = media.id;
+
+      try {
+        const castDetails = await fetchCastDetails('movie', mediaId);
+        const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
+        const movieYear = release_date ? new Date(release_date).getFullYear() : '';
+        const titleOrName = title;
+
+        const movieData = {
+          titleOrName,
+          poster_path,
+          genreNames,
+          overview,
+          vote_average,
+          movieYear,
+          cast: castNames,
+        };
+
+        const movieDataJson = JSON.stringify(movieData);
+
+        localStorage.setItem('movieData', movieDataJson);
+
+        const movieTitle = encodeURIComponent(movieData.titleOrName);
+
+        window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    });
 
     moviesContent.appendChild(movieBox);
   });
 }
+
 
 function getGenreNamesString(genreIds, mediaType) {
   const genreNames = window[`${mediaType}GenreNames`];
@@ -335,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   try {
     // Fetch genre names for movies
     const movieGenres = await fetchGenres('movie');
-    
+
     // Populate genre dropdown
     populateSelect(GENRE_SELECT, movieGenres);
 
@@ -378,7 +402,7 @@ async function populateYears(selectElement) {
   try {
     // Fetch available years from the API
     const years = await fetchAvailableYears();
-    
+
     // Clear existing options
     selectElement.innerHTML = '';
 
@@ -425,9 +449,9 @@ GENRE_SELECT.addEventListener('change', handleGenreChange);
 YEAR_SELECT.addEventListener('change', handleYearChange);
 
 async function handleGenreChange() {
-  currentPage= 1;
-  selectedPage= 1;
-  searchInput.value='';
+  currentPage = 1;
+  selectedPage = 1;
+  searchInput.value = '';
 
   const selectedGenre = GENRE_SELECT.value;
   const selectedYear = YEAR_SELECT.value;
@@ -436,9 +460,9 @@ async function handleGenreChange() {
 }
 
 async function handleYearChange() {
-  currentPage= 1;
-  selectedPage= 1;
-  searchInput.value='';
+  currentPage = 1;
+  selectedPage = 1;
+  searchInput.value = '';
 
   const selectedGenre = GENRE_SELECT.value;
   const selectedYear = YEAR_SELECT.value;

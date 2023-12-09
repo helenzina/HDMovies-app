@@ -1,34 +1,10 @@
 <?php
 
-$is_invalid = false;
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (isset($_POST["email"])) {
-    $mysqli = require __DIR__ . '..\conn.php';
-    $sql = sprintf("SELECT * FROM users WHERE email = '%s'", $mysqli->real_escape_string($_POST["email"]));
-
-    $result = $mysqli->query($sql);
-    $user = $result->fetch_assoc();
-
-    if ($user) {
-      if (isset($_POST["password"]) && password_verify($_POST["password"], $user["password_hash"])) {
-        session_start();
-        $_SESSION["user_id"] = $user["id"];
-        header("Location: landing_page.php");
-        die();
-      }
-    }
-
-  }
-  $is_invalid = true; // Set to true if email is not set in $_POST
-  
-}
-
-/*
 $is_invalid= false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $mysqli = require __DIR__ . '..\conn.php';
+    $mysqli = require __DIR__ . "/conn.php";
+    
     $sql = sprintf("SELECT * FROM users WHERE email = '%s'", $mysqli->real_escape_string($_POST["email"]));
 
     $result = $mysqli->query($sql);
@@ -36,6 +12,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($user) {
       if (password_verify($_POST["password"], $user["password_hash"])) {
+        session_start();
+
+        $_SESSION["user_id"] = $user["id"];
+        $_SESSION["username"] = $user["username"];
+        $_SESSION["email"] = $user["email"];
+
+        echo "User ID: " . $_SESSION["user_id"] . "<br>";
+        echo "Username: " . $_SESSION["username"] . "<br>";
+        echo "Email: " . $_SESSION["email"] . "<br>";
+
         header("Location: landing_page.php");
         die();
       }
@@ -43,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $is_invalid= true;
 }
-*/
+
 ?>
 
 <!doctype html>
@@ -84,18 +70,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <div class="mb-3 bg-white rounded px-2">
           <label for="exampleInputEmail1" class="form-label small-text">Email Address</label>
-          <input type="email" class="form-control border-0 p-0" id="exampleInputEmail1" aria-describedby="emailHelp"
-          value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
+          <input type="email" name="email" class="form-control border-0 p-0" id="exampleInputEmail1"
+          aria-describedby="emailHelp" value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
+
         </div>
 
         <div class="mb-3 bg-white rounded px-2">
           <label for="exampleInputPassword1" class="form-label small-text">Password</label>
-          <input type="password" class="form-control border-0 p-0" id="exampleInputPassword1">
+          <input type="password" name="password" class="form-control border-0 p-0" id="exampleInputPassword1">
         </div>
 
         <?php if ($is_invalid): ?>
           <p class="text-white invalid">Invalid email or password.</p>
         <?php endif; ?>
+
+        <a href="forgot.php" class="forgot">Forgot your password?</a>
 
         <button type="submit" class="btn btn-danger mt-3">Sign In</button>
 

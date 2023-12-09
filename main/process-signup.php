@@ -1,7 +1,7 @@
 <?php   
 
     $password_hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $mysqli= require __DIR__ . "..\conn.php";
+    $mysqli= require __DIR__ . "\conn.php";
 
     $sql= "INSERT INTO users (username, email, password_hash)
     VALUES (?, ?, ?)";
@@ -20,10 +20,7 @@
     } else {
         //na bgainoyn mhnymata sth forma
     }
-    
-
-
-
+ 
 ?>
 
 

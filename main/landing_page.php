@@ -35,8 +35,8 @@ session_start();
         <img src="../images/logotext red.png" alt="">
       </a>
       <div class="dropdown-box dropdown">
-        <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()" data-bs-toggle="dropdown"
-          aria-expanded="false">
+        <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()"
+          data-bs-toggle="dropdown" aria-expanded="false">
           <span class="dropdown-text">Browse</span>
         </button>
         <ul class="dropdown-menu" id="dropMenu" aria-labelledby="dropdownMenuButton1">
@@ -50,12 +50,12 @@ session_start();
       <!--navbar-->
       <div class="navbar">
 
-        <a href="#home" class="nav-link">
+        <a href="landing_page.php#home" class="nav-link">
           <i class="bi bi-house"></i>
           <span class="nav-link-title">Home</span>
         </a>
 
-        <a href="#popular" class="nav-link">
+        <a href="landing_page.php#popular" class="nav-link">
           <i class="bi bi-star"></i>
           <span class="nav-link-title">Popular</span>
         </a>
@@ -79,7 +79,7 @@ session_start();
 
 
       <!--user-->
-     <!--
+      <!--
       <img src="/////profile pic from db/////" class="user-img" id="profileImage">
         <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <li><a href="profile.php" class="dropdown-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
@@ -87,27 +87,31 @@ session_start();
           </li>
         </ul>
       -->
-        <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
-          <div class="sub-menu" id="subMenu">
-            <div class="user-info">
-              <h4>///username///</h4>
-            </div>
-            <hr>
-            <a href="profile.php" class="sub-menu-link">
-              <span style="width: 100%;">
-                <i class="bi bi-person-circle"></i>
-                Profile
-              </span> 
-              <span> > </span>
-            </a>
-            <a href="logout.php" class="sub-menu-link">
-              <span style="width: 100%;">
-                <i class="bi bi-box-arrow-right"></i>
-                Logout
-              </span>
-              <span> > </span>
-            </a>
+      <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+      <div class="sub-menu" id="subMenu">
+        <div class="user-info">
+          <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+            <h4>
+              <?= $_SESSION["username"] ?>
+            </h4>
+          <?php endif; ?>
         </div>
+        <hr>
+        <a href="profile.php" class="sub-menu-link">
+          <span style="width: 100%;">
+            <i class="bi bi-person-circle"></i>
+            Profile
+          </span>
+          <span> > </span>
+        </a>
+        <a href="logout.php" class="sub-menu-link">
+          <span style="width: 100%;">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+          </span>
+          <span> > </span>
+        </a>
+      </div>
 
 
 
@@ -121,9 +125,15 @@ session_start();
 
       <div class="home-text">
         <h1 class="home-title">The Killer</h1>
-        <a class="btn watch-btn" href="#" role="button"> <i class="bi bi-play-fill"></i>
+        <a class="btn watch-btn" href="#" role="button" onclick="toggleVideo()"> <i class="bi bi-play-fill"></i>
           <span class="text">Watch trailer</span>
         </a>
+        <div class="video-container">
+          <div class="video-box">
+            <video id="myvideo" src="../some videos/the_killer.mp4" controls></video>
+            <i class="bi bi-x close-video play-btn" onclick="closeTrailer()" type="button"></i>
+          </div>
+        </div>
       </div>
     </section>
     <!--popular-->
@@ -188,7 +198,7 @@ session_start();
         </div>
 
     </section>
-    
+
 
     <!--favourite-->
     <!--
@@ -228,19 +238,19 @@ session_start();
   </nav>
 -->
 
-  <!--copyright-->
-  <div class="copy_land">
-    <i class="bi bi-c-circle"></i>
-    <span>HDMovies All Rights Reserved</span>
-  </div>
+    <!--copyright-->
+    <div class="copy_land">
+      <i class="bi bi-c-circle"></i>
+      <span>HDMovies All Rights Reserved</span>
+    </div>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
 
-  <script src="../js/main.js"></script>
-  <script src="../js/popular.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/popular.js"></script>
 </body>
 
 </html>

@@ -36,27 +36,28 @@ session_start();
                 <img src="../images/logotext red.png" alt="">
             </a>
             <div class="dropdown-box dropdown">
-                <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <span class="dropdown-text">Browse</span>
+                <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="dropdown-text">Browse</span>
                 </button>
                 <ul class="dropdown-menu" id="dropMenu" aria-labelledby="dropdownMenuButton1">
-                  <li><a class="dropdown-item" href="landing_page.php/#home" onclick="hideDropdown()">Home</a></li>
-                  <li><a class="dropdown-item" href="landing_page.php/#popular" onclick="hideDropdown()">Popular</a></li>
-                  <li><a class="dropdown-item" href="movies.php" onclick="hideDropdown()">Movies</a></li>
-                  <li><a class="dropdown-item" href="series.php" onclick="hideDropdown()">Series</a></li>
-                  <li><a class="dropdown-item" href="favourite.php" onclick="hideDropdown()">Favourite</a></li>
+                    <li><a class="dropdown-item" href="landing_page.php#home" onclick="hideDropdown()">Home</a></li>
+                    <li><a class="dropdown-item" href="landing_page.php#popular" onclick="hideDropdown()">Popular</a>
+                    </li>
+                    <li><a class="dropdown-item" href="movies.php" onclick="hideDropdown()">Movies</a></li>
+                    <li><a class="dropdown-item" href="series.php" onclick="hideDropdown()">Series</a></li>
+                    <li><a class="dropdown-item" href="favourite.php" onclick="hideDropdown()">Favourite</a></li>
                 </ul>
-              </div>
+            </div>
             <!--navbar-->
             <div class="navbar">
 
-                <a href="landing_page.php/#home" class="nav-link">
+                <a href="landing_page.php#home" class="nav-link">
                     <i class="bi bi-house"></i>
                     <span class="nav-link-title">Home</span>
                 </a>
 
-                <a href="landing_page.php/#popular" class="nav-link">
+                <a href="landing_page.php#popular" class="nav-link">
                     <i class="bi bi-star"></i>
                     <span class="nav-link-title">Popular</span>
                 </a>
@@ -87,25 +88,29 @@ session_start();
 
             <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
             <div class="sub-menu" id="subMenu">
-              <div class="user-info">
-                <h4>///username///</h4>
-              </div>
-              <hr>
-              <a href="profile.php" class="sub-menu-link">
-                <span style="width: 100%;">
-                  <i class="bi bi-person-circle"></i>
-                  Profile
-                </span> 
-                <span> > </span>
-              </a>
-              <a href="logout.php" class="sub-menu-link">
-                <span style="width: 100%;">
-                  <i class="bi bi-box-arrow-right"></i>
-                  Logout
-                </span>
-                <span> > </span>
-              </a>
-          </div>
+                <div class="user-info">
+                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                        <h4>
+                            <?= $_SESSION["username"] ?>
+                        </h4>
+                    <?php endif; ?>
+                </div>
+                <hr>
+                <a href="profile.php" class="sub-menu-link">
+                    <span style="width: 100%;">
+                        <i class="bi bi-person-circle"></i>
+                        Profile
+                    </span>
+                    <span> > </span>
+                </a>
+                <a href="logout.php" class="sub-menu-link">
+                    <span style="width: 100%;">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </span>
+                    <span> > </span>
+                </a>
+            </div>
 
 
         </div>

@@ -27,7 +27,7 @@ session_start();
 
 </head>
 
-<body style="min-height: 50rem;">
+<body>
 
     <header>
         <!--nav-->
@@ -36,27 +36,28 @@ session_start();
                 <img src="../images/logotext red.png" alt="">
             </a>
             <div class="dropdown-box dropdown">
-                <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <span class="dropdown-text">Browse</span>
+                <button class="dropdown dropdown-toggle" type="button" id="dropdownMenuButton1" onclick="showDropdown()"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="dropdown-text">Browse</span>
                 </button>
                 <ul class="dropdown-menu" id="dropMenu" aria-labelledby="dropdownMenuButton1">
-                  <li><a class="dropdown-item" href="landing_page.php/#home" onclick="hideDropdown()">Home</a></li>
-                  <li><a class="dropdown-item" href="landing_page.php/#popular" onclick="hideDropdown()">Popular</a></li>
-                  <li><a class="dropdown-item" href="movies.php" onclick="hideDropdown()">Movies</a></li>
-                  <li><a class="dropdown-item" href="series.php" onclick="hideDropdown()">Series</a></li>
-                  <li><a class="dropdown-item" href="favourite.php" onclick="hideDropdown()">Favourite</a></li>
+                    <li><a class="dropdown-item" href="landing_page.php#home" onclick="hideDropdown()">Home</a></li>
+                    <li><a class="dropdown-item" href="landing_page.php#popular" onclick="hideDropdown()">Popular</a>
+                    </li>
+                    <li><a class="dropdown-item" href="movies.php" onclick="hideDropdown()">Movies</a></li>
+                    <li><a class="dropdown-item" href="series.php" onclick="hideDropdown()">Series</a></li>
+                    <li><a class="dropdown-item" href="favourite.php" onclick="hideDropdown()">Favourite</a></li>
                 </ul>
-              </div>
+            </div>
             <!--navbar-->
             <div class="navbar">
 
-                <a href="landing_page.php/#home" class="nav-link">
+                <a href="landing_page.php#home" class="nav-link">
                     <i class="bi bi-house"></i>
                     <span class="nav-link-title">Home</span>
                 </a>
 
-                <a href="landing_page.php/#popular" class="nav-link">
+                <a href="landing_page.php#popular" class="nav-link">
                     <i class="bi bi-star"></i>
                     <span class="nav-link-title">Popular</span>
                 </a>
@@ -87,25 +88,29 @@ session_start();
 
             <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
             <div class="sub-menu" id="subMenu">
-              <div class="user-info">
-                <h4>///username///</h4>
-              </div>
-              <hr>
-              <a href="profile.php" class="sub-menu-link">
-                <span style="width: 100%;">
-                  <i class="bi bi-person-circle"></i>
-                  Profile
-                </span> 
-                <span> > </span>
-              </a>
-              <a href="logout.php" class="sub-menu-link">
-                <span style="width: 100%;">
-                  <i class="bi bi-box-arrow-right"></i>
-                  Logout
-                </span>
-                <span> > </span>
-              </a>
-          </div>
+                <div class="user-info">
+                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                        <h4>
+                            <?= $_SESSION["username"] ?>
+                        </h4>
+                    <?php endif; ?>
+                </div>
+                <hr>
+                <a href="profile.php" class="sub-menu-link">
+                    <span style="width: 100%;">
+                        <i class="bi bi-person-circle"></i>
+                        Profile
+                    </span>
+                    <span> > </span>
+                </a>
+                <a href="logout.php" class="sub-menu-link">
+                    <span style="width: 100%;">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </span>
+                    <span> > </span>
+                </a>
+            </div>
 
 
         </div>
@@ -113,44 +118,46 @@ session_start();
 
     <!--home-->
     <div data-spy="scroll" data-target="navbar" data-offset="0">
-        <section class="home container" id="favourite">
+        <section class="home container" id="home">
 
-            <!--favourite-->
-            <section class="movies container" id="favourite" style="padding-top: 0rem;">
+            <!--movies-->
+            <section class="movies container" id="movies">
 
                 <div class="heading">
-                    <h2 class="heading-title">Favourite</h2>
+                    <h2 class="heading-title">Series</h2>
+                    <select class="form-select form-select-sm select-genre" aria-label="Small select example">
+                        <option selected>Select genre</option>
+
+                    </select>
+                    <select class="form-select form-select-sm select-year" aria-label="Small select example">
+                        <option selected>Select year</option>
+
+                    </select>
                 </div>
-                <!--
-                <div class="movies-content">
-                    
-                    <div class="movie-box" id="m1">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="play.php" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
+                <div class="movies-content" id="moviesContent">
+                    <div class="movie-box">
+
                     </div>
 
                 </div>
-                -->
 
             </section>
         </section>
 
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center" id="pagination">
+
+            </ul>
+        </nav>
+
+
     </div>
 
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center" id="pagination">
 
-        </ul>
-    </nav>
 
     <!--copyright-->
     <div class="copyright">
+
         <i class="bi bi-c-circle"></i>
         <span>HDMovies All Rights Reserved</span>
     </div>
@@ -161,8 +168,7 @@ session_start();
         crossorigin="anonymous"></script>
 
     <script src="../js/main.js"></script>
-    <script src="../js/movies.js"></script>
-    <script src="../js/popular.js"></script>
+    <script src="../js/series.js"></script>
 </body>
 
 </html>
