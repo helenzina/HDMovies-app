@@ -2,10 +2,6 @@
 session_start();
 $mysqli = require __DIR__ . "/conn.php";
 
-const API_KEY = "api_key=367252e60c24db0b754ac368cd58b460";
-const BASE_URL = "https://api.themoviedb.org/3/";
-const IMG_URL = "https://image.tmdb.org/t/p/w500/";
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
     $data = json_decode(file_get_contents('php://input'), true);
@@ -16,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
 
         // Perform database update to mark/unmark the movie as favorite
         $stmt = $mysqli->prepare('INSERT INTO favorites (user_id, movie_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_id = user_id');
-        $stmt->bind_param('iii', $userId, $movieId);
+        $stmt->bind_param('ii', $userId, $movieId);
 
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
@@ -29,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
     }
 }
 
-// Fetch favorite movies from the database
 $userId = $_SESSION['user_id'] ?? 0; // Assuming 0 for unauthenticated users
 $query = "SELECT movie_id FROM favorites WHERE user_id = ?";
 $stmt = $mysqli->prepare($query);
@@ -37,7 +32,17 @@ $stmt->bind_param('i', $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $favoriteMovies = $result->fetch_all(MYSQLI_ASSOC);
+
+$favoriteMoviesData = [];
+
+foreach ($favoriteMovies as $favoriteMovie) {
+    $favoriteMoviesData[] = $favoriteMovie['movie_id'];
+}
+
+echo json_encode(['favoriteMovies' => $favoriteMoviesData]);
 ?>
+
+
 
 <!doctype html>
 <html lang="en">
@@ -163,30 +168,8 @@ $favoriteMovies = $result->fetch_all(MYSQLI_ASSOC);
         <div class="heading">
             <h2 class="heading-title">Favourite</h2>
         </div>
-        <div class="movies-content" id="favoriteMoviesContainer">
-            <?php foreach ($favoriteMovies as $favoriteMovie): ?>
-                <?php
-                // Fetch movie details from TMDB API
-                $movieDetails = json_decode(file_get_contents(BASE_URL . "movie/{$favoriteMovie['movie_id']}?" .API_KEY), true);
-                $posterPath = $movieDetails['poster_path'] ?? '';
-                $title = $movieDetails['title'] ?? $movieDetails['name'] ?? '';
-                $genreNames = ''; // You need to fetch genre names from the API or your database
-                ?>
-                <div class="movie-box">
-                    <img src="<?= IMG_URL . $posterPath ?>" class="movie-box-img">
-                    <div class="box-text">
-                        <h2 class="movie-title"><?= $title?></h2>
-                        <span class="movie-type"><?= $genreNames ?></span>
-                        <a href="#" class="play-btn">
-                            <i class="bi bi-play-circle-fill card-icon"></i>
-                        </a>
-                        <a href="#" class="fav-btn" data-movie-id="<?= $favoriteMovie['movie_id'] ?>" data-is-favorite="false">
-                            <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_<?= $favoriteMovie['movie_id'] ?>"></i>
-                            <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_<?= $favoriteMovie['movie_id'] ?>"></i>
-                        </a>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        <div class="movies-content" id="favoriteMoviesContainer"> 
+
         </div>
     </section>
 
@@ -212,7 +195,7 @@ $favoriteMovies = $result->fetch_all(MYSQLI_ASSOC);
         crossorigin="anonymous"></script>
 
     <script src="../js/main.js"></script>
-    <script src="../js/movies.js"></script>
+    <script src="../js/favourite.js"></script>
     <script src="../js/popular.js"></script>
 </body>
 

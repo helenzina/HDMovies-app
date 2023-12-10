@@ -3,7 +3,7 @@ const BASE_URL = "https://api.themoviedb.org/3/";
 const IMG_URL = "https://image.tmdb.org/t/p/w500/";
 const SEARCH_URL = BASE_URL + '/search/multi?' + API_KEY;
 
-const moviesContent = document.getElementById('moviesContent');
+const moviesContent = document.getElementById('favoriteMoviesContainer');
 const paginationContainer = document.getElementById('pagination');
 
 let currentPage = 1;
@@ -66,17 +66,16 @@ async function searchMovies(query) {
 
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-          // Fetch genre names for movies
-    const movieGenres = await fetchGenres('movie');
 
     // Fetch and display the initial page of movies
-    const movies = await fetchMoviesWithPerPage('movie', currentPage);
-    showMedia(movies.results, 'movie');
+    //const movies = await fetchMoviesWithPerPage('movie', currentPage);
+    //showMedia(movies.results, 'movie');
+    const favoriteMovies = await fetchFavoriteMovies();
+    const movies = await fetchMoviesByIds(favoriteMovies);
     totalPages = movies.total_pages;
-
+    showMedia(movies, 'movie');
     // Render pagination links
     renderPagination();
-
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -247,47 +246,66 @@ async function markAsFavorite(movieId, isFavorite) {
 }
 
 async function fetchMoviesByIds(movieIds) {
-  try {
-      // Customize the API endpoint based on your API structure
-      const API_URL = `https://api.themoviedb.org/3/movies?api_key=YOUR_API_KEY&language=en-US&include_adult=false&page=1&movie_ids=${movieIds.join(',')}`;
-      const response = await fetch(API_URL);
-      const data = await response.json();
-
-      return data.results || [];
-  } catch (error) {
+    try {
+      const movies = [];
+  
+      for (const movieId of movieIds) {
+        // Customize the API endpoint based on your API structure
+        const API_URL = `https://api.themoviedb.org/3/movie/${movieId}?api_key=367252e60c24db0b754ac368cd58b460&language=en-US`;
+  
+        const response = await fetch(API_URL);
+        const movieData = await response.json();
+  
+        // Assuming movieData contains the details of a single movie
+        movies.push(movieData);
+      }
+  
+      return movies;
+    } catch (error) {
       console.error('Error fetching movies by IDs:', error.message);
       throw new Error('Failed to fetch movies by IDs');
+    }
   }
-}
+  
 
 async function fetchFavoriteMovies() {
-  try {
-    const response = await fetch('favourite.php');
-    
-    // Check if the response has JSON content type
-    const contentType = response.headers.get('content-type');
-    
-    if (contentType && contentType.includes('application/json')) {
-      // Parse JSON response
-      const data = await response.json();
-      console.log('Favorite movies:', data.favoriteMovies);
-      return data.favoriteMovies;
-    } else {
-      // Handle non-JSON response (maybe log or handle differently)
-      const responseText = await response.text();
-      console.log('Non-JSON response:', responseText);
-      // You might want to return an empty array or handle this case differently
-      return [];
+    try {
+      const response = await fetch('favourite.php');
+      
+      // Check if the response has JSON content type
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        // Parse JSON response
+        const data = await response.json();
+        console.log('Favorite movies:', data.favoriteMovies);
+        return data.favoriteMovies;
+      } else {
+        // Handle non-JSON response
+        const responseText = await response.text();
+        const closingBracketPosition = responseText.indexOf('}');
+        const trimmedResponse = responseText.substring(0, closingBracketPosition + 1);
+  
+        try {
+          // Parse the trimmed JSON-like response
+          const trimmedData = JSON.parse(trimmedResponse);
+          return trimmedData.favoriteMovies;
+        } catch (parseError) {
+          console.error('Error parsing trimmed response:', parseError.message);
+          // You might want to return an empty array or handle this case differently
+          return [];
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching favorite movies:', error.message);
+      throw new Error('Failed to fetch favorite movies');
     }
-  } catch (error) {
-    console.error('Error fetching favorite movies:', error.message);
-    throw new Error('Failed to fetch favorite movies');
   }
-}
+  
 
 
 
-function showMedia(data, mediaType) {
+function showMedia(data, mediaType) {  
   moviesContent.innerHTML = '';
 
   if (data.length === 0) {
@@ -312,18 +330,17 @@ function showMedia(data, mediaType) {
   }
 
   data.forEach(media => {
-    const { title, name, poster_path, genre_ids, overview, vote_average, release_date } = media;
-
+    const { original_title, name, poster_path, genres, overview, vote_average, release_date } = media;
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
 
-    const genreNames = getGenreNamesString(genre_ids, mediaType);
+    const genreNames = getGenreNamesString(genres, mediaType);
 
 
     movieBox.innerHTML = `
       <img src="${IMG_URL + poster_path}" class="movie-box-img">
       <div class="box-text">
-        <h2 class="movie-title">${title || name}</h2>
+        <h2 class="movie-title">${original_title || name}</h2>
         <span class="movie-type">${genreNames}</span>
         <a href="#" class="play-btn">
           <i class="bi bi-play-circle-fill card-icon"></i>
@@ -380,7 +397,7 @@ favBtn.addEventListener('click', async () => {
         const castDetails = await fetchCastDetails('movie', mediaId);
         const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
         const movieYear = release_date ? new Date(release_date).getFullYear() : '';
-        const titleOrName = title;
+        const titleOrName = original_title;
 
         const movieData = {
           titleOrName,
@@ -410,10 +427,9 @@ favBtn.addEventListener('click', async () => {
 
 
 function getGenreNamesString(genreIds, mediaType) {
-  const genreNames = window[`${mediaType}GenreNames`];
 
-  if (genreNames && Array.isArray(genreIds)) {
-    const genreNamesArray = genreIds.map(id => genreNames[id]);
+  if (Array.isArray(genreIds)) {
+  const genreNamesArray = genreIds.map(genre => genre.name);
     return genreNamesArray.join(', ');
   } else {
     return 'Genre information not available';
