@@ -1,5 +1,42 @@
 <?php
 session_start();
+$mysqli = require __DIR__ . "/conn.php";
+
+const API_KEY = "api_key=367252e60c24db0b754ac368cd58b460";
+const BASE_URL = "https://api.themoviedb.org/3/";
+const IMG_URL = "https://image.tmdb.org/t/p/w500/";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    if (isset($data['movieId'], $data['isFavorite'])) {
+        $movieId = $data['movieId'];
+        $isFavorite = $data['isFavorite'];
+
+        // Perform database update to mark/unmark the movie as favorite
+        $stmt = $mysqli->prepare('INSERT INTO favorites (user_id, movie_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_id = user_id');
+        $stmt->bind_param('iii', $userId, $movieId);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Failed to update database']);
+        }
+
+        // Exit to prevent HTML from being sent
+        exit;
+    }
+}
+
+// Fetch favorite movies from the database
+$userId = $_SESSION['user_id'] ?? 0; // Assuming 0 for unauthenticated users
+$query = "SELECT movie_id FROM favorites WHERE user_id = ?";
+$stmt = $mysqli->prepare($query);
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$favoriteMovies = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!doctype html>
@@ -86,7 +123,8 @@ session_start();
             </div>
             <!--user-->
 
-            <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+            <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage"
+                onclick="showMenu()">
             <div class="sub-menu" id="subMenu">
                 <div class="user-info">
                     <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
@@ -122,28 +160,36 @@ session_start();
 
             <!--favourite-->
             <section class="movies container" id="favourite" style="padding-top: 0rem;">
-
-                <div class="heading">
-                    <h2 class="heading-title">Favourite</h2>
-                </div>
-                <!--
-                <div class="movies-content">
-                    
-                    <div class="movie-box" id="m1">
-                        <img src="../images/logo.png" alt="" class="movie-box-img">
-                        <div class="box-text">
-                            <h2 class="movie-title">title</h2>
-                            <span class="movie-type">genre</span>
-                            <a href="play.php" class="play-btn">
-                                <i class="bi bi-play-circle-fill card-icon"></i>
-                            </a>
-                        </div>
+        <div class="heading">
+            <h2 class="heading-title">Favourite</h2>
+        </div>
+        <div class="movies-content" id="favoriteMoviesContainer">
+            <?php foreach ($favoriteMovies as $favoriteMovie): ?>
+                <?php
+                // Fetch movie details from TMDB API
+                $movieDetails = json_decode(file_get_contents(BASE_URL . "movie/{$favoriteMovie['movie_id']}?" .API_KEY), true);
+                $posterPath = $movieDetails['poster_path'] ?? '';
+                $title = $movieDetails['title'] ?? $movieDetails['name'] ?? '';
+                $genreNames = ''; // You need to fetch genre names from the API or your database
+                ?>
+                <div class="movie-box">
+                    <img src="<?= IMG_URL . $posterPath ?>" class="movie-box-img">
+                    <div class="box-text">
+                        <h2 class="movie-title"><?= $title?></h2>
+                        <span class="movie-type"><?= $genreNames ?></span>
+                        <a href="#" class="play-btn">
+                            <i class="bi bi-play-circle-fill card-icon"></i>
+                        </a>
+                        <a href="#" class="fav-btn" data-movie-id="<?= $favoriteMovie['movie_id'] ?>" data-is-favorite="false">
+                            <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_<?= $favoriteMovie['movie_id'] ?>"></i>
+                            <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_<?= $favoriteMovie['movie_id'] ?>"></i>
+                        </a>
                     </div>
-
                 </div>
-                -->
+            <?php endforeach; ?>
+        </div>
+    </section>
 
-            </section>
         </section>
 
     </div>

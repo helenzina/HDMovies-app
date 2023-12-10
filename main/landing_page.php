@@ -77,17 +77,7 @@ session_start();
 
       </div>
 
-
-      <!--user-->
-      <!--
-      <img src="/////profile pic from db/////" class="user-img" id="profileImage">
-        <ul id="dropdownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <li><a href="profile.php" class="dropdown-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
-          <li><a href="logout.php" class="dropdown-item"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
-          </li>
-        </ul>
-      -->
-      <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+      <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage" onclick="showMenu()">
       <div class="sub-menu" id="subMenu">
         <div class="user-info">
           <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>

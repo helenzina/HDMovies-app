@@ -78,7 +78,7 @@ session_start();
       </div>
 
       <!--user-->
-      <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+      <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage" onclick="showMenu()">
       <div class="sub-menu" id="subMenu">
         <div class="user-info">
           <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>

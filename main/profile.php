@@ -79,7 +79,7 @@ session_start();
             </div>
 
             <!--user-->
-            <img src="/////profile pic from db/////" class="user-img" id="profileImage" onclick="showMenu()">
+            <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage" onclick="showMenu()">
             <div class="sub-menu" id="subMenu">
                 <div class="user-info">
                     <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
@@ -136,7 +136,7 @@ session_start();
                                 <div class="tab-pane fade show active" id="account-general" role="tabpanel"
                                     aria-labelledby="general-tab" tabindex="0">
                                     <div class="profile-card-body media align-items-center p-2">
-                                        <img src="///profile image///" class="user-img-change">
+                                        <img src="../images/profile.jpg" class="user-img-change">
                                         <label for="formFile" class="form-label changeimg">
                                             <input type="text" class="form-control d-none" readonly>
                                             <button type="button" class="btn btn-outline-primary"

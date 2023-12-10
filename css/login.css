@@ -88,6 +88,11 @@ img{
     font-size: 1rem; 
 }
 
+.form-check-input:checked{
+    background-color: red;
+    border-color: red;
+}
+
 .form-control{
     box-shadow: none !important;
 }

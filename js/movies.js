@@ -214,6 +214,40 @@ async function fetchCastDetails(mediaType, mediaId) {
   }
 }
 
+async function markAsFavorite(movieId, isFavorite) {
+  try {
+    const response = await fetch('favourite.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        movieId,
+        isFavorite,
+      }),
+    });
+
+    const responseText = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log(movieId);
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError.message);
+      throw new Error('Failed to parse JSON response');
+    }
+
+    if (data.success) {
+      console.log(`Movie ${movieId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
+    } else {
+      console.error('Failed to mark movie as favorite');
+    }
+  } catch (error) {
+    console.error('Error marking movie as favorite:', error.message);
+  }
+}
+
 function showMedia(data, mediaType) {
   moviesContent.innerHTML = '';
 
@@ -270,27 +304,28 @@ function showMedia(data, mediaType) {
     plusIcon.id = `plusIcon_${media.id}`;
     heartIcon.id = `heartIcon_${media.id}`;
 
-    favBtn.addEventListener('click', async () => {
-      const movieId = favBtn.dataset.movieId;
-      const isFavorite = favBtn.dataset.isFavorite === 'true';
-    
-      const plusIcon = document.getElementById(`plusIcon_${movieId}`);
-      const heartIcon = document.getElementById(`heartIcon_${movieId}`);
+favBtn.addEventListener('click', async () => {
+  const movieId = favBtn.dataset.movieId;
+  const isFavorite = favBtn.dataset.isFavorite === 'true';
 
-    
-      if (!isFavorite) {
-        plusIcon.style.display='none';
-        heartIcon.style.display='flex';
-      } else {
-        plusIcon.style.display='flex';
-        heartIcon.style.display='none';
-      }
-    
-      // Toggle the favorite status
-      favBtn.dataset.isFavorite = (!isFavorite).toString();
-    
-      // You can perform additional actions based on the favorite status here
-    });
+  const plusIcon = document.getElementById(`plusIcon_${movieId}`);
+  const heartIcon = document.getElementById(`heartIcon_${movieId}`);
+
+  if (!isFavorite) {
+    plusIcon.style.display = 'none';
+    heartIcon.style.display = 'flex';
+  } else {
+    plusIcon.style.display = 'flex';
+    heartIcon.style.display = 'none';
+  }
+
+  // Toggle the favorite status
+  favBtn.dataset.isFavorite = (!isFavorite).toString();
+
+  // Send a request to mark the movie as a favorite
+  markAsFavorite(movieId, !isFavorite);
+  // You can perform additional actions based on the favorite status here
+});
     
 
     const playBtn = movieBox.querySelector('.play-btn');

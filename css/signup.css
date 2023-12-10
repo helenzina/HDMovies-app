@@ -113,6 +113,12 @@ img{
     padding-top: 0.22rem;
 }
 
+.invalid{
+    color: red;
+    font-weight: bold;
+    font-size: 1rem; 
+}
+
 .signup:hover{
     color: gray;
     border-color: none;

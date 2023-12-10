@@ -1,33 +1,47 @@
 <?php
 
-$is_invalid= false;
+$is_invalid = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $mysqli = require __DIR__ . "/conn.php";
-    
+
     $sql = sprintf("SELECT * FROM users WHERE email = '%s'", $mysqli->real_escape_string($_POST["email"]));
 
     $result = $mysqli->query($sql);
-    $user= $result->fetch_assoc();
+    $user = $result->fetch_assoc();
 
     if ($user) {
-      if (password_verify($_POST["password"], $user["password_hash"])) {
-        session_start();
+        if (password_verify($_POST["password"], $user["password_hash"])) {
+            session_start();
 
-        $_SESSION["user_id"] = $user["id"];
-        $_SESSION["username"] = $user["username"];
-        $_SESSION["email"] = $user["email"];
+            $_SESSION["user_id"] = $user["id"];
+            $_SESSION["username"] = $user["username"];
+            $_SESSION["email"] = $user["email"];
 
-        echo "User ID: " . $_SESSION["user_id"] . "<br>";
-        echo "Username: " . $_SESSION["username"] . "<br>";
-        echo "Email: " . $_SESSION["email"] . "<br>";
+            echo "User ID: " . $_SESSION["user_id"] . "<br>";
+            echo "Username: " . $_SESSION["username"] . "<br>";
+            echo "Email: " . $_SESSION["email"] . "<br>";
 
-        header("Location: landing_page.php");
-        die();
-      }
+            // Check if "Remember Me" is checked
+            if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
+                // Set a cookie with a long expiration time (e.g., 30 days)
+                setcookie("user_email", $user["email"], time() + 30 * 24 * 3600, "/");
+            }
+
+            header("Location: landing_page.php");
+            die();
+        }
     }
 
-    $is_invalid= true;
+    $is_invalid = true;
+}
+
+// Check for the presence of the "Remember Me" cookie
+if (isset($_COOKIE['user_email'])) {
+    // Auto-fill the email field if the cookie exists
+    $remembered_email = htmlspecialchars($_COOKIE['user_email']);
+} else {
+    $remembered_email = "";
 }
 
 ?>
@@ -84,18 +98,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <p class="text-white invalid">Invalid email or password.</p>
         <?php endif; ?>
 
-        <a href="forgot.php" class="forgot">Forgot your password?</a>
-
         <button type="submit" class="btn btn-danger mt-3">Sign In</button>
 
         <div class="mb-3 mt-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+          <input type="checkbox" class="form-check-input" id="exampleCheck1" name="remember">
           <label class="form-check-label text-white small-text" for="exampleCheck1">Remember Me</label>
         </div>
         <div class="mt-3">
           <p class="m-0 new">
             <span>New to HDMovies?</span>
-            <a href="signup_page.html" class="signup">Sign up now.</a>
+            <a href="signup.php" class="signup">Sign up now.</a>
           </p>
         </div>
       </form>
