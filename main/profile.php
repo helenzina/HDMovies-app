@@ -1,6 +1,25 @@
 <?php
 session_start();
+$mysqli = require __DIR__ . "/conn.php";
+
+$sql = "SELECT subscription_start_date, subscription_end_date, selected_plan FROM users WHERE id = ?";
+$stmt = $mysqli->prepare($sql);
+
+if (!$stmt) {
+    die("SQL error: " . $mysqli->error);
+}
+
+// Bind user ID to the prepared statement
+$stmt->bind_param("i", $_SESSION["user_id"]);
+
+$stmt->execute();
+$stmt->bind_result($subscriptionStartDate, $subscriptionEndDate, $selectedPlan); // Bind result for both fields
+$stmt->fetch();
+
+$remainingDays = floor((strtotime($subscriptionEndDate) - strtotime($subscriptionStartDate)) / 86400);
+
 ?>
+
 
 <!doctype html>
 <html lang="en" style="min-height: 30rem;">
@@ -79,7 +98,8 @@ session_start();
             </div>
 
             <!--user-->
-            <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage" onclick="showMenu()">
+            <img src="../images/profile.jpg" style="background-color: white" class="user-img" id="profileImage"
+                onclick="showMenu()">
             <div class="sub-menu" id="subMenu">
                 <div class="user-info">
                     <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
@@ -207,13 +227,16 @@ session_start();
                                         <div class="mb-3 row">
                                             <label for="sub" class="col-sm col-form-label">Active plan</label>
                                             <div class="col-sm-9">
-                                                <input type="text" readonly class="form-control-plaintext" id="sub"
-                                                    value="">
+                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                    <input type="text" readonly class="form-control-plaintext" id="sub"
+                                                        value="<?php echo $selectedPlan . " months"; ?>">
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                         <div class="mb-3 row">
-                                            <label for="change_sub" class="col-sm col-form-label">Select new
-                                                plan</label>
+                                            <label for="change_sub" class="col-sm col-form-label">
+                                                    Extend your plan by
+                                            </label>
                                             <div class="col-sm-9">
                                                 <select class="form-select form-select-sm"
                                                     aria-label=".form-select-sm example">
@@ -225,9 +248,11 @@ session_start();
                                         </div>
                                         <div class="mb-3 row">
                                             <div class="col-sm p-1">
-                                                <label for="expire_sub" class="alert alert-warning" role="alert">
-                                                    Your plan expires in <span>$days</span>days.
-                                                </label>
+                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                    <label for="expire_sub" class="alert alert-warning" role="alert">
+                                                        Your plan expires in <?php echo $remainingDays; ?> days.
+                                                    </label>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -241,7 +266,7 @@ session_start();
                 <div class="mt-3 save-cancel container">
                     <button type="button" class="btn btn-primary">Save changes</button>
                     <a href="landing_page.php">
-                        <button type="button" class="btn btn-light">Cancel</button>   
+                        <button type="button" class="btn btn-light">Cancel</button>
                     </a>
                 </div>
             </div>

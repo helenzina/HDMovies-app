@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -32,7 +37,8 @@
 
     <div class="d-flex justify-content-center align-items-center container">
         <section class="login-box" style="width: 50rem; height: 35rem">
-            <div class="pricing-table">
+        <form action="checkout.php" method="post">
+        <div class="pricing-table">
                 <h2 class="text-white" style="text-align: center;">Choose your plan</h2>
                 <div class="grid">
                     <div class="box basic">
@@ -46,8 +52,8 @@
                             <div>Great plan to start from</div>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="subscription"
-                            value="3" id="flexRadioDefault3">
+                            <input class="form-check-input" type="radio" name="subscription" value="3"
+                                id="flexRadioDefault3">
                         </div>
                     </div>
                     <div class="box standard">
@@ -61,8 +67,8 @@
                             <div>More months, more watching time</div>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="subscription"
-                            value="6" id="flexRadioDefault6">
+                            <input class="form-check-input" type="radio" name="subscription" value="6"
+                                id="flexRadioDefault6">
                         </div>
                     </div>
                     <div class="box premium">
@@ -76,16 +82,18 @@
                             <div>A great deal for the enthusiasts</div>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="subscription"
-                            value="12" id="flexRadioDefault12">
+                            <input class="form-check-input" type="radio" name="subscription" value="12"
+                                id="flexRadioDefault12">
                         </div>
                     </div>
 
                 </div>
             </div>
-                                <div class="save-cancel">
-                        <button type="button" class="btn btn-primary">Choose plan</button>
-                    </div>
+            <div class="save-cancel">
+                <input type="button" class="btn btn-primary" id="choosePlanBtn" value="Choose plan">
+            </div>
+        </form>
+
         </section>
     </div>
 
@@ -95,23 +103,39 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var radioButtons = document.querySelectorAll('input[type="radio"]');
+    document.addEventListener("DOMContentLoaded", function () {
+        var radioButtons = document.querySelectorAll('input[type="radio"]');
+        var choosePlanBtn = document.getElementById('choosePlanBtn');
 
-            radioButtons.forEach(function (radio) {
-                radio.addEventListener("change", function () {
-                    // Remove style from all boxes
-                    document.querySelectorAll('.pricing-table .grid .box').forEach(function (box) {
-                        box.classList.remove('selected-box');
-                    });
+        choosePlanBtn.addEventListener('click', function () {
+            var selectedRadioButton = document.querySelector('input[name="subscription"]:checked');
 
-                    // Add style to the selected box
-                    var selectedBox = this.closest('.box');
-                    selectedBox.classList.add('selected-box');
+            if (selectedRadioButton) {
+                // Get the value of the selected radio button
+                var selectedValue = selectedRadioButton.value;
+
+                // Redirect to checkout.php with the selected plan value
+                window.location.href = 'checkout.php?plan=' + selectedValue;
+            } else {
+                // No radio button selected
+                alert('Please select a subscription plan');
+            }
+        });
+
+        radioButtons.forEach(function (radio) {
+            radio.addEventListener("change", function () {
+                // Remove style from all boxes
+                document.querySelectorAll('.pricing-table .grid .box').forEach(function (box) {
+                    box.classList.remove('selected-box');
                 });
+
+                // Add style to the selected box
+                var selectedBox = this.closest('.box');
+                selectedBox.classList.add('selected-box');
             });
         });
-    </script>
+    });
+</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

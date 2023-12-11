@@ -1,4 +1,5 @@
 <?php
+session_start();
 $mysqli = require __DIR__ . "/conn.php";
 
 $username_already_exists = false;
@@ -35,25 +36,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($username_already_exists === false && $email_already_exists === false) {
         // Process signup
-
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $_SESSION['username'] = $username;
+        $_SESSION['email'] = $email;
+        $_SESSION['password_hash'] = $password_hash;
 
-        $sql = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?, ?)";
-        $stmt = $mysqli->prepare($sql);
-
-        if (!$stmt) {
-            die("SQL error: " . $mysqli->error);
-        }
-
-        $stmt->bind_param("ssss", $username, $email, $password_hash);
-
-        if ($stmt->execute()) {
-            // Registration successful
-            header("Location: successful_signup.html");
-            die();
-        } else {
-            // Handle error
-        }
+        // Registration successful
+        header("Location: subscription.php");
+        die();
     }
 }
 ?>
@@ -123,7 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <?php if ($username_already_exists && $email_already_exists): ?>
-                    <p class="text-white invalid" style="font-weight: bold">User already exists, please login <a href="login.php" class="signup"> here. </a></p>
+                    <p class="text-white invalid" style="font-weight: bold">User already exists, please login <a
+                            href="login.php" class="signup"> here. </a></p>
                 <?php elseif ($username_already_exists): ?>
                     <p class="text-white invalid" style="font-weight: bold">Username already exists.</p>
                 <?php elseif ($email_already_exists): ?>

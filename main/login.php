@@ -3,45 +3,60 @@
 $is_invalid = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $mysqli = require __DIR__ . "/conn.php";
+  $mysqli = require __DIR__ . "/conn.php";
 
-    $sql = sprintf("SELECT * FROM users WHERE email = '%s'", $mysqli->real_escape_string($_POST["email"]));
+  $sql = sprintf("SELECT * FROM users WHERE email = '%s'", $mysqli->real_escape_string($_POST["email"]));
 
-    $result = $mysqli->query($sql);
-    $user = $result->fetch_assoc();
+  $result = $mysqli->query($sql);
+  $user = $result->fetch_assoc();
 
-    if ($user) {
-        if (password_verify($_POST["password"], $user["password_hash"])) {
-            session_start();
+  if ($user) {
+    if (password_verify($_POST["password"], $user["password_hash"])) {
+      session_start();
 
-            $_SESSION["user_id"] = $user["id"];
-            $_SESSION["username"] = $user["username"];
-            $_SESSION["email"] = $user["email"];
+      $_SESSION["user_id"] = $user["id"];
+      $_SESSION["username"] = $user["username"];
+      $_SESSION["email"] = $user["email"];
 
-            echo "User ID: " . $_SESSION["user_id"] . "<br>";
-            echo "Username: " . $_SESSION["username"] . "<br>";
-            echo "Email: " . $_SESSION["email"] . "<br>";
+      //echo "User ID: " . $_SESSION["user_id"] . "<br>";
+      //echo "Username: " . $_SESSION["username"] . "<br>";
+      //echo "Email: " . $_SESSION["email"] . "<br>";
 
-            // Check if "Remember Me" is checked
-            if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
-                // Set a cookie with a long expiration time (e.g., 30 days)
-                setcookie("user_email", $user["email"], time() + 30 * 24 * 3600, "/");
-            }
+      // Check if "Remember Me" is checked
+      if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
+        // Set a cookie with a long expiration time (e.g., 30 days)
+        setcookie("user_email", $user["email"], time() + 30 * 24 * 3600, "/");
+      }
 
-            header("Location: landing_page.php");
-            die();
-        }
+
+
+
+      $remainingDays = floor((strtotime($user["subscription_end_date"]) - strtotime($user["subscription_start_date"])) / 86400);
+
+      if ($remainingDays <= 0 || $remainingDays === null) {
+        echo '<script>alert("Your subscription plan has expired. You will be redirected to the subscription page.")</script>';
+        header("Location: subscription.php");
+        exit;
+      } else {
+        // Continue with rendering the landing page or any other authorized page
+        header("Location: landing_page.php");
+        exit;
+      }
+
+
+
     }
+  }
 
-    $is_invalid = true;
+  $is_invalid = true;
 }
 
 // Check for the presence of the "Remember Me" cookie
 if (isset($_COOKIE['user_email'])) {
-    // Auto-fill the email field if the cookie exists
-    $remembered_email = htmlspecialchars($_COOKIE['user_email']);
+  // Auto-fill the email field if the cookie exists
+  $remembered_email = htmlspecialchars($_COOKIE['user_email']);
 } else {
-    $remembered_email = "";
+  $remembered_email = "";
 }
 
 ?>
@@ -85,7 +100,7 @@ if (isset($_COOKIE['user_email'])) {
         <div class="mb-3 bg-white rounded px-2">
           <label for="exampleInputEmail1" class="form-label small-text">Email Address</label>
           <input type="email" name="email" class="form-control border-0 p-0" id="exampleInputEmail1"
-          aria-describedby="emailHelp" value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
+            aria-describedby="emailHelp" value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
 
         </div>
 
