@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($username_already_exists === false && $email_already_exists === false) {
         // Process signup
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $_SESSION['signup_success'] = true;
         $_SESSION['username'] = $username;
         $_SESSION['email'] = $email;
         $_SESSION['password_hash'] = $password_hash;

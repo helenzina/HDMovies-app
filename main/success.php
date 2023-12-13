@@ -2,25 +2,58 @@
 session_start();
 require __DIR__ . "/conn.php";
 
-$username = $_SESSION['username'];
-$email = $_SESSION['email'];
-$password_hash = $_SESSION['password_hash'];
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 $subscriptionStartDate = $_SESSION["subscription_start_date"];
-$subscriptionEndDate = $_SESSION["subscription_end_date"] ;
-$selectedPlan= $_SESSION["selected_plan"];
+$subscriptionEndDate = $_SESSION["subscription_end_date"];
+$selectedPlan = $_SESSION["selected_plan"];
 
-//prepei sto success.php
-$sql = "INSERT INTO users (username, email, password_hash, subscription_start_date, subscription_end_date, selected_plan) VALUES (?, ?, ?, ?, ?, ?)";
-$stmt = $mysqli->prepare($sql);
+if (isset($_SESSION['login_redirect'])) {
+  $id = $_SESSION['user_id'];
+  
 
-if (!$stmt) {
-    die("SQL error: " . $mysqli->error);
-}
+    $sql_subscription = "UPDATE users SET subscription_start_date = ?, subscription_end_date = ?, selected_plan = ? WHERE id = ?";
+    $stmt_update_subscription = $mysqli->prepare($sql_subscription);
 
-$stmt->bind_param("ssssss", $username, $email, $password_hash, $subscriptionStartDate, $subscriptionEndDate, $selectedPlan);
+    if (!$stmt_update_subscription) {
+        die("SQL error: " . $mysqli->error);
+    }
 
-$stmt->execute();
+    $stmt_update_subscription->bind_param("ssss", $subscriptionStartDate, $subscriptionEndDate, $selectedPlan, $id);
+
+    $stmt_update_subscription->execute();
+    unset($_SESSION['login_redirect']);
+
+} elseif (isset($_SESSION['signup_success'])) {
+      // User doesn't exist, perform insert
+    $username = $_SESSION['username'];
+    $email = $_SESSION['email'];
+    $password_hash = $_SESSION['password_hash'];
+    
+
+    $sql_insert_subscription = "INSERT INTO users (username, email, password_hash, subscription_start_date, subscription_end_date, selected_plan) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt_insert_subscription = $mysqli->prepare($sql_insert_subscription);
+
+    if (!$stmt_insert_subscription) {
+      die("SQL error: " . $mysqli->error);
+    }
+  
+  
+  $stmt_insert_subscription->bind_param("ssssss", $username, $email, $password_hash, $subscriptionStartDate, $subscriptionEndDate, $selectedPlan);
+  
+  if (!$stmt_insert_subscription->execute()) {
+      die("Execute failed: (" . $stmt_insert_subscription->errno . ") " . $stmt_insert_subscription->error);
+  }
+
+  unset($_SESSION['signup_success']);
+} 
+
+
+  
 ?>
+
 
 
 <!doctype html>
@@ -56,7 +89,7 @@ $stmt->execute();
 
   <div class="d-flex justify-content-center align-items-center container">
     <section class="login-box">
-      <p class="text-white">Signup successful. You can sign in
+      <p class="text-white">Thank you for your subscription. You can sign in
         <a href="login.php" class="signin">here.</a>
       </p>
     </section>

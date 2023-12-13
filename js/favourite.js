@@ -64,12 +64,18 @@ async function searchMovies(query) {
   return await response.json();
 }
 
+// Add these constants to your existing code
+const GENRE_SELECT = document.querySelector('.select-genre');
+const YEAR_SELECT = document.querySelector('.select-year');
+const TYPE_SELECT = document.querySelector('.select-type');
+
 document.addEventListener('DOMContentLoaded', async function () {
   try {
 
     // Fetch and display the initial page of movies
     //const movies = await fetchMoviesWithPerPage('movie', currentPage);
     //showMedia(movies.results, 'movie');
+    populateType(TYPE_SELECT, { movie: 'Movie', tv: 'Series' });
     const favoriteMovies = await fetchFavoriteMovies();
     const movies = await fetchMoviesByIds(favoriteMovies);
     totalPages = movies.total_pages;
@@ -80,6 +86,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('Error:', error.message);
   }
 });
+
 
 function renderPagination() {
   paginationContainer.innerHTML = '';
@@ -220,23 +227,44 @@ async function markAsFavorite(movieId, isFavorite) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        movieId,
+        mediaId: movieId,
         isFavorite,
+        mediaType: 'movie', // Add mediaType to the request body
       }),
     });
 
-    const responseText = await response.text();
-
+    const contentType = response.headers.get('content-type');
     let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Error parsing JSON:', parseError.message);
-      throw new Error('Failed to parse JSON response');
+
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // Handle non-JSON response
+      const responseText = await response.text();
+      const closingBracketPosition = responseText.indexOf('}');
+      const trimmedResponse = responseText.substring(0, closingBracketPosition + 1);
+
+      try {
+        data = JSON.parse(trimmedResponse);
+      } catch (parseError) {
+        console.error('Error parsing trimmed response:', parseError.message);
+        throw new Error('Failed to parse JSON response');
+      }
     }
 
     if (data.success) {
       console.log(`Movie ${movieId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
+      
+      // Update localStorage based on the favorite status
+      let favoriteMovies = JSON.parse(localStorage.getItem('favoriteMovies')) || [];
+
+      if (isFavorite) {
+        favoriteMovies.push(movieId);
+      } else {
+        favoriteMovies = favoriteMovies.filter(favMovieId => favMovieId !== movieId);
+      }
+
+      localStorage.setItem('favoriteMovies', JSON.stringify(favoriteMovies));
     } else {
       console.error('Failed to mark movie as favorite');
     }
@@ -244,6 +272,7 @@ async function markAsFavorite(movieId, isFavorite) {
     console.error('Error marking movie as favorite:', error.message);
   }
 }
+
 
 async function fetchMoviesByIds(movieIds) {
     try {
@@ -279,6 +308,7 @@ async function fetchFavoriteMovies() {
         // Parse JSON response
         const data = await response.json();
         console.log('Favorite movies:', data.favoriteMovies);
+        
         return data.favoriteMovies;
       } else {
         // Handle non-JSON response
@@ -289,6 +319,7 @@ async function fetchFavoriteMovies() {
         try {
           // Parse the trimmed JSON-like response
           const trimmedData = JSON.parse(trimmedResponse);
+          localStorage.setItem('favoriteMovies', JSON.stringify(trimmedData.favoriteMovies));
           return trimmedData.favoriteMovies;
         } catch (parseError) {
           console.error('Error parsing trimmed response:', parseError.message);
@@ -303,128 +334,136 @@ async function fetchFavoriteMovies() {
   }
   
 
-
-
-function showMedia(data, mediaType) {  
-  moviesContent.innerHTML = '';
-
-  if (data.length === 0) {
-    // Display a message when there are no search results
-    moviesContent.innerHTML = `
-      <section class="movies container" id="movies"> 
-        <br/>       
-        <p class="nomovies">No movies found.</p>
-        <div class="movies-content" id="moviesContent">
-          <div class="movie-box"></div> 
-        </div>
-      </section>`;
-
-    // Adjust the height of the page
-    document.body.style.minHeight = "50rem";
-    document.querySelector('.copyright').style.padding = '0rem';
-
-    return;
-  } else {
-    document.body.style.minHeight = "100rem";
-    document.querySelector('.copyright').style.padding = '12rem';
-  }
-
-  data.forEach(media => {
-    const { original_title, name, poster_path, genres, overview, vote_average, release_date } = media;
-    const movieBox = document.createElement('div');
-    movieBox.classList.add('movie-box');
-
-    const genreNames = getGenreNamesString(genres, mediaType);
-
-
-    movieBox.innerHTML = `
-      <img src="${IMG_URL + poster_path}" class="movie-box-img">
-      <div class="box-text">
-        <h2 class="movie-title">${original_title || name}</h2>
-        <span class="movie-type">${genreNames}</span>
-        <a href="#" class="play-btn">
-          <i class="bi bi-play-circle-fill card-icon"></i>
-        </a>
-        <a href="#" class="fav-btn" data-movie-id="${media.id}" data-is-favorite="false">
-          <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_${media.id}"></i>
-          <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${media.id}"></i>
-        </a>
-      </div>`;
-
-    const favBtn = movieBox.querySelector('.fav-btn');
-    const plusIcon = favBtn.querySelector('.bi-plus-circle');
-    const heartIcon = favBtn.querySelector('.bi-heart-fill');
-    heartIcon.style.display = 'none';
-
-    favBtn.dataset.movieId = media.id;
-    plusIcon.id = `plusIcon_${media.id}`;
-    heartIcon.id = `heartIcon_${media.id}`;
-
-favBtn.addEventListener('click', async () => {
-  const movieId = favBtn.dataset.movieId;
-  const isFavorite = favBtn.dataset.isFavorite === 'true';
-
-  const plusIcon = document.getElementById(`plusIcon_${movieId}`);
-  const heartIcon = document.getElementById(`heartIcon_${movieId}`);
-
-  if (!isFavorite) {
-    plusIcon.style.display = 'none';
-    heartIcon.style.display = 'flex';
-  } else {
-    plusIcon.style.display = 'flex';
-    heartIcon.style.display = 'none';
-  }
-
-  // Toggle the favorite status
-  favBtn.dataset.isFavorite = (!isFavorite).toString();
-
-  // Send a request to mark the movie as a favorite
-  markAsFavorite(movieId, !isFavorite);
+  async function showMedia(data, mediaType) {  
+    moviesContent.innerHTML = '';
   
-  if (!isFavorite) {
-    favoriteMovies.push(media);
-  } else {
-    favoriteMovies = favoriteMovies.filter(favMovie => favMovie.id !== id);
-  }
-});
-    
-
-    const playBtn = movieBox.querySelector('.play-btn');
-    playBtn.addEventListener('click', async () => {
-      const mediaId = media.id;
-
-      try {
-        const castDetails = await fetchCastDetails('movie', mediaId);
-        const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
-        const movieYear = release_date ? new Date(release_date).getFullYear() : '';
-        const titleOrName = original_title;
-
-        const movieData = {
-          titleOrName,
-          poster_path,
-          genreNames,
-          overview,
-          vote_average,
-          movieYear,
-          cast: castNames,
-        };
-
-        const movieDataJson = JSON.stringify(movieData);
-
-        localStorage.setItem('movieData', movieDataJson);
-
-        const movieTitle = encodeURIComponent(movieData.titleOrName);
-
-        window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
-      } catch (error) {
-        console.error('Error:', error.message);
+    if (data.length === 0) {
+      // Display a message when there are no search results
+      moviesContent.innerHTML = `
+        <section class="movies container" id="movies"> 
+          <br/>       
+          <p class="nomovies">No movies found.</p>
+          <div class="movies-content" id="moviesContent">
+            <div class="movie-box"></div> 
+          </div>
+        </section>`;
+  
+      // Adjust the height of the page
+      document.body.style.minHeight = "50rem";
+      document.querySelector('.copyright').style.padding = '0rem';
+  
+      return;
+    } else {
+      document.body.style.minHeight = "100rem";
+      document.querySelector('.copyright').style.padding = '12rem';
+    }
+  
+    // Fetch favorite movies from the server
+    const favoriteMovies = await fetchFavoriteMovies();
+  
+    data.forEach(media => {
+      const { id, original_title, name, poster_path, genres, overview, vote_average, release_date } = media;
+      const movieBox = document.createElement('div');
+      movieBox.classList.add('movie-box');
+  
+      const genreNames = getGenreNamesString(genres, mediaType);
+  
+      // Check if the movie is a favorite
+      const isFavorite = favoriteMovies.includes(id);
+  
+      movieBox.innerHTML = `
+        <img src="${IMG_URL + poster_path}" class="movie-box-img">
+        <div class="box-text">
+          <h2 class="movie-title">${original_title || name}</h2>
+          <span class="movie-type">${genreNames}</span>
+          <a href="#" class="play-btn">
+            <i class="bi bi-play-circle-fill card-icon"></i>
+          </a>
+          <a href="#" class="fav-btn" data-movie-id="${id}" data-is-favorite="${isFavorite}">
+            <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_${id}"></i>
+            <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${id}"></i>
+          </a>
+        </div>`;
+  
+      const favBtn = movieBox.querySelector('.fav-btn');
+      const plusIcon = favBtn.querySelector('.bi-plus-circle');
+      const heartIcon = favBtn.querySelector('.bi-heart-fill');
+  
+      if (isFavorite) {
+        // If the movie is a favorite, display the heart icon
+        plusIcon.style.display = 'none';
+        heartIcon.style.display = 'flex';
+      } else {
+        // If the movie is not a favorite, display the plus icon
+        plusIcon.style.display = 'flex';
+        heartIcon.style.display = 'none';
       }
+  
+      favBtn.dataset.movieId = id;
+      favBtn.dataset.isFavorite = isFavorite.toString();
+      plusIcon.id = `plusIcon_${id}`;
+      heartIcon.id = `heartIcon_${id}`;
+  
+      favBtn.addEventListener('click', async () => {
+        const movieId = favBtn.dataset.movieId;
+        const isFavorite = favBtn.dataset.isFavorite === 'true';
+  
+        if (!isFavorite) {
+          // If the movie is not a favorite, mark it as favorite and display the heart icon
+          plusIcon.style.display = 'none';
+          heartIcon.style.display = 'flex';
+        } else {
+          // If the movie is already a favorite, unmark it and display the plus icon
+          plusIcon.style.display = 'flex';
+          heartIcon.style.display = 'none';
+        }
+  
+        // Toggle the favorite status
+        favBtn.dataset.isFavorite = (!isFavorite).toString();
+  
+        // Send a request to mark the movie as a favorite
+        markAsFavorite(movieId, !isFavorite);
+  
+        // Update the array of favorite movies
+        updateFavoriteMovies(movieId, !isFavorite);
+      });
+  
+      const playBtn = movieBox.querySelector('.play-btn');
+      playBtn.addEventListener('click', async () => {
+        const mediaId = id;
+  
+        try {
+          const castDetails = await fetchCastDetails('movie', mediaId);
+          const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
+          const movieYear = release_date ? new Date(release_date).getFullYear() : '';
+          const titleOrName = original_title;
+  
+          const movieData = {
+            titleOrName,
+            poster_path,
+            genreNames,
+            overview,
+            vote_average,
+            movieYear,
+            cast: castNames,
+          };
+  
+          const movieDataJson = JSON.stringify(movieData);
+  
+          localStorage.setItem('movieData', movieDataJson);
+  
+          const movieTitle = encodeURIComponent(movieData.titleOrName);
+  
+          window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
+        } catch (error) {
+          console.error('Error:', error.message);
+        }
+      });
+  
+      moviesContent.appendChild(movieBox);
     });
-
-    moviesContent.appendChild(movieBox);
-  });
-}
-
+  }
+  
 
 function getGenreNamesString(genreIds, mediaType) {
 
@@ -446,31 +485,7 @@ function getColor(vote) {
   }
 }
 
-// Add these constants to your existing code
-const GENRE_SELECT = document.querySelector('.select-genre');
-const YEAR_SELECT = document.querySelector('.select-year');
 
-document.addEventListener('DOMContentLoaded', async function () {
-  try {
-    // Fetch genre names for movies
-    const movieGenres = await fetchGenres('movie');
-
-    // Populate genre dropdown
-    populateSelect(GENRE_SELECT, movieGenres);
-
-    populateYears(YEAR_SELECT);
-
-    // Fetch and display the initial page of movies
-    const movies = await fetchMoviesWithPerPage('movie', currentPage);
-    showMedia(movies.results, 'movie');
-    totalPages = movies.total_pages;
-
-    // Render pagination links
-    renderPagination();
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
-});
 
 // Add this function to fetch available years from the API
 async function fetchAvailableYears() {
@@ -539,9 +554,29 @@ function populateSelect(selectElement, options) {
   }
 }
 
+// Add this function to populate the dropdown
+function populateType(selectElement, options) {
+  // Clear existing options
+  selectElement.innerHTML = '';
+  // Add default option
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.text = 'Select type';
+  selectElement.appendChild(defaultOption);
+
+  // Add media type options
+  for (const type in options) {
+    const option = document.createElement('option');
+    option.value = type;
+    option.text = options[type];
+    selectElement.appendChild(option);
+  }
+}
+
 // Add these event listeners to handle genre and year changes
 GENRE_SELECT.addEventListener('change', handleGenreChange);
 YEAR_SELECT.addEventListener('change', handleYearChange);
+TYPE_SELECT.addEventListener('change', handleTypeChange);
 
 async function handleGenreChange() {
   currentPage = 1;
@@ -565,6 +600,16 @@ async function handleYearChange() {
   await fetchAndShowMovies(selectedGenre, selectedYear);
 }
 
+async function handleTypeChange() {
+  currentPage = 1;
+  selectedPage = 1;
+  searchInput.value = '';
+
+  const selectedType = TYPE_SELECT.value;
+
+  await fetchAndShowType(selectedType);
+}
+
 async function fetchAndShowMovies(genreId, year) {
   try {
     const movies = await fetchMoviesByGenreAndYear('movie', currentPage, genreId, year);
@@ -576,6 +621,62 @@ async function fetchAndShowMovies(genreId, year) {
   } catch (error) {
     console.error('Error:', error.message);
   }
+}
+
+async function fetchAndShowType(selectedType) {
+  try {
+    const favoriteMedia = await fetchFavoriteMedia(selectedType);
+    const media = await fetchMediaByIds(selectedType, favoriteMedia);
+    showMedia(media.results, selectedType);
+    totalPages = media.total_pages;
+
+    // Render pagination links
+    renderPagination();
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+async function fetchFavoriteMedia(selectedType) {
+  try {
+    const response = await fetch('favorite.php?type=' + selectedType);
+    const data = await response.json();
+    console.log('Favorite ' + selectedType + 's:', data.favoriteMedia);
+    return data.favoriteMedia;
+  } catch (error) {
+    console.error('Error fetching favorite ' + selectedType + 's:', error.message);
+    throw new Error('Failed to fetch favorite ' + selectedType + 's');
+  }
+}
+
+async function fetchMediaByIds(selectedType, mediaIds) {
+  try {
+    const media = [];
+
+    for (const mediaId of mediaIds) {
+      // Customize the API endpoint based on your API structure
+      const API_URL = BASE_URL + `${selectedType}/${mediaId}?${API_KEY}&language=en-US`;
+
+      const response = await fetch(API_URL);
+      const mediaData = await response.json();
+
+      // Assuming mediaData contains the details of a single media
+      media.push(mediaData);
+    }
+
+    return media;
+  } catch (error) {
+    console.error('Error fetching ' + selectedType + 's by IDs:', error.message);
+    throw new Error('Failed to fetch ' + selectedType + 's by IDs');
+  }
+}
+
+
+async function fetchMediaByType(mediaType, page) {
+  let apiUrl = BASE_URL + `discover/${mediaType}?${API_KEY}&page=${page}&per_page=${moviesPerPage}`;
+
+  const response = await fetch(apiUrl);
+  return await response.json();
 }
 
 async function fetchMoviesByGenreAndYear(mediaType, page, genreId, year) {

@@ -513,7 +513,7 @@ header {
     gap: 0.5rem;
 }
 
-.select-genre{
+.select-genre, .select-type{
     margin-left: auto;
 }
 

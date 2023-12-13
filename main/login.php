@@ -28,13 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         setcookie("user_email", $user["email"], time() + 30 * 24 * 3600, "/");
       }
 
-
-
-
       $remainingDays = floor((strtotime($user["subscription_end_date"]) - strtotime($user["subscription_start_date"])) / 86400);
 
       if ($remainingDays <= 0 || $remainingDays === null) {
         echo '<script>alert("Your subscription plan has expired. You will be redirected to the subscription page.")</script>';
+        $_SESSION['login_redirect'] = true;
         header("Location: subscription.php");
         exit;
       } else {
@@ -42,8 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: landing_page.php");
         exit;
       }
-
-
 
     }
   }
