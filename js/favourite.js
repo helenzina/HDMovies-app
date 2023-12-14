@@ -69,19 +69,55 @@ const GENRE_SELECT = document.querySelector('.select-genre');
 const YEAR_SELECT = document.querySelector('.select-year');
 const TYPE_SELECT = document.querySelector('.select-type');
 
-document.addEventListener('DOMContentLoaded', async function () {
+async function fetchAndShowMedia(selectedType) {
   try {
+    // Fetch favorite movies and TV series from the server
+    const favoriteMovies = await fetchFavoriteMovies('movie');
+    const favoriteSeries = await fetchFavoriteMovies('tv');
 
-    // Fetch and display the initial page of movies
-    //const movies = await fetchMoviesWithPerPage('movie', currentPage);
-    //showMedia(movies.results, 'movie');
-    populateType(TYPE_SELECT, { movie: 'Movie', tv: 'Series' });
-    const favoriteMovies = await fetchFavoriteMovies();
-    const movies = await fetchMoviesByIds(favoriteMovies);
-    totalPages = movies.total_pages;
+    if (selectedType === ''){
+    const movies = await fetchMoviesByIds('movie', favoriteMovies);
+    const series = await fetchMoviesByIds('tv', favoriteSeries);
     showMedia(movies, 'movie');
+    showMedia(series, 'tv');
+    } else if (selectedType === 'movie'){
+    const movies = await fetchMoviesByIds('movie', favoriteMovies);
+    showMedia(movies, 'movie');
+    } else {
+    const series = await fetchMoviesByIds('tv', favoriteSeries);
+    showMedia(series, 'tv');
+  }
+
+
+    // Combine total pages for both movies and TV series
+    totalPages = Math.max(movies.total_pages, series.total_pages);
+
     // Render pagination links
     renderPagination();
+  } catch (error) {
+    console.error('Error fetching and showing media:', error.message);
+  }
+}
+
+// Modify the event listener for DOMContentLoaded to call fetchAndShowMedia
+document.addEventListener('DOMContentLoaded', async function () {
+  try {
+    populateType(TYPE_SELECT, { movie: 'Movies', tv: 'Series' });
+
+    let selectedType = TYPE_SELECT.value;
+
+    TYPE_SELECT.addEventListener('change', async function () {
+      selectedType = TYPE_SELECT.value;
+      currentPage = 1;
+      selectedPage = 1;
+      searchInput.value = '';
+
+      // Fetch and show media based on the selected type
+      await fetchAndShowType(selectedType);
+    });
+
+    // Fetch and display the initial page of favorite movies and TV series
+    await fetchAndShowMedia(selectedType);
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -219,7 +255,7 @@ async function fetchCastDetails(mediaType, mediaId) {
   }
 }
 
-async function markAsFavorite(movieId, isFavorite) {
+async function markAsFavorite(mediaId, isFavorite, mediaType) {
   try {
     const response = await fetch('favourite.php', {
       method: 'POST',
@@ -227,9 +263,9 @@ async function markAsFavorite(movieId, isFavorite) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        mediaId: movieId,
+        mediaId,
         isFavorite,
-        mediaType: 'movie', // Add mediaType to the request body
+        mediaType,
       }),
     });
 
@@ -253,51 +289,54 @@ async function markAsFavorite(movieId, isFavorite) {
     }
 
     if (data.success) {
-      console.log(`Movie ${movieId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
+      console.log(`${mediaType} ${mediaId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
       
       // Update localStorage based on the favorite status
-      let favoriteMovies = JSON.parse(localStorage.getItem('favoriteMovies')) || [];
-
+      let favoriteMedia = JSON.parse(localStorage.getItem(`favorite${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}`)) || [];
+      console.log(favoriteMedia);
       if (isFavorite) {
-        favoriteMovies.push(movieId);
+        favoriteMedia.push(mediaId);
       } else {
-        favoriteMovies = favoriteMovies.filter(favMovieId => favMovieId !== movieId);
+        favoriteMedia = favoriteMedia.filter(favMediaId => favMediaId !== mediaId);
       }
 
-      localStorage.setItem('favoriteMovies', JSON.stringify(favoriteMovies));
+      localStorage.setItem(`favorite${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}`, JSON.stringify(favoriteMedia));
     } else {
-      console.error('Failed to mark movie as favorite');
+      console.error(`Failed to mark ${mediaType} as favorite`);
     }
   } catch (error) {
-    console.error('Error marking movie as favorite:', error.message);
+    console.error(`Error marking ${mediaType} as favorite:`, error.message);
   }
 }
 
 
-async function fetchMoviesByIds(movieIds) {
-    try {
-      const movies = [];
-  
-      for (const movieId of movieIds) {
-        // Customize the API endpoint based on your API structure
-        const API_URL = `https://api.themoviedb.org/3/movie/${movieId}?api_key=367252e60c24db0b754ac368cd58b460&language=en-US`;
-  
-        const response = await fetch(API_URL);
-        const movieData = await response.json();
-  
-        // Assuming movieData contains the details of a single movie
-        movies.push(movieData);
+
+async function fetchMoviesByIds(mediaType, movieIds) {
+  try {
+
+      const media = [];
+
+      for (const mediaId of movieIds) {
+          // Customize the API endpoint based on your API structure
+          const API_URL = `${BASE_URL}${mediaType}/${mediaId}?${API_KEY}&language=en-US`;
+
+          const response = await fetch(API_URL);
+          const mediaData = await response.json();
+
+          // Assuming mediaData contains the details of a single media
+          media.push(mediaData);
       }
-  
-      return movies;
-    } catch (error) {
-      console.error('Error fetching movies by IDs:', error.message);
-      throw new Error('Failed to fetch movies by IDs');
-    }
+
+      return media;
+  } catch (error) {
+      console.error(`Error fetching ${mediaType}s by IDs:`, error.message);
+      throw new Error(`Failed to fetch ${mediaType}s by IDs`);
   }
+}
+
   
 
-async function fetchFavoriteMovies() {
+async function fetchFavoriteMovies(mediaType) {
     try {
       const response = await fetch('favourite.php');
       
@@ -307,9 +346,13 @@ async function fetchFavoriteMovies() {
       if (contentType && contentType.includes('application/json')) {
         // Parse JSON response
         const data = await response.json();
-        console.log('Favorite movies:', data.favoriteMovies);
-        
-        return data.favoriteMovies;
+
+          if (mediaType === 'movie') {
+            return data.favoriteMovies;
+          } else if (mediaType === 'tv') {
+            return data.favoriteSeries;
+          }
+
       } else {
         // Handle non-JSON response
         const responseText = await response.text();
@@ -319,8 +362,13 @@ async function fetchFavoriteMovies() {
         try {
           // Parse the trimmed JSON-like response
           const trimmedData = JSON.parse(trimmedResponse);
-          localStorage.setItem('favoriteMovies', JSON.stringify(trimmedData.favoriteMovies));
-          return trimmedData.favoriteMovies;
+          if (mediaType === 'movie') {
+            localStorage.setItem('favoriteMovies', JSON.stringify(trimmedData.favoriteMovies));
+            return trimmedData.favoriteMovies;
+          } else if (mediaType === 'tv') {
+            localStorage.setItem('favoriteSeries', JSON.stringify(trimmedData.favoriteSeries));
+            return trimmedData.favoriteSeries;
+          }
         } catch (parseError) {
           console.error('Error parsing trimmed response:', parseError.message);
           // You might want to return an empty array or handle this case differently
@@ -328,8 +376,8 @@ async function fetchFavoriteMovies() {
         }
       }
     } catch (error) {
-      console.error('Error fetching favorite movies:', error.message);
-      throw new Error('Failed to fetch favorite movies');
+      console.error('Error fetching favorite media:', error.message);
+      throw new Error('Failed to fetch favorite media');
     }
   }
   
@@ -358,18 +406,22 @@ async function fetchFavoriteMovies() {
       document.querySelector('.copyright').style.padding = '12rem';
     }
   
-    // Fetch favorite movies from the server
-    const favoriteMovies = await fetchFavoriteMovies();
+  // Fetch favorite movies and TV series from the server
+
+  const favoriteMovies = await fetchFavoriteMovies('movie');
+  const favoriteSeries = await fetchFavoriteMovies('tv');
+
+  const favoriteMedia = [...favoriteMovies, ...favoriteSeries];
   
     data.forEach(media => {
-      const { id, original_title, name, poster_path, genres, overview, vote_average, release_date } = media;
+      const { id, original_title, name, poster_path, genres, overview, vote_average, release_date, first_air_date } = media;
       const movieBox = document.createElement('div');
       movieBox.classList.add('movie-box');
-  
+
       const genreNames = getGenreNamesString(genres, mediaType);
   
       // Check if the movie is a favorite
-      const isFavorite = favoriteMovies.includes(id);
+      const isFavorite = favoriteMedia.includes(id);
   
       movieBox.innerHTML = `
         <img src="${IMG_URL + poster_path}" class="movie-box-img">
@@ -399,13 +451,13 @@ async function fetchFavoriteMovies() {
         heartIcon.style.display = 'none';
       }
   
-      favBtn.dataset.movieId = id;
+      favBtn.dataset.mediaId = id;
       favBtn.dataset.isFavorite = isFavorite.toString();
       plusIcon.id = `plusIcon_${id}`;
       heartIcon.id = `heartIcon_${id}`;
   
       favBtn.addEventListener('click', async () => {
-        const movieId = favBtn.dataset.movieId;
+        const mediaId = favBtn.dataset.mediaId;
         const isFavorite = favBtn.dataset.isFavorite === 'true';
   
         if (!isFavorite) {
@@ -422,10 +474,7 @@ async function fetchFavoriteMovies() {
         favBtn.dataset.isFavorite = (!isFavorite).toString();
   
         // Send a request to mark the movie as a favorite
-        markAsFavorite(movieId, !isFavorite);
-  
-        // Update the array of favorite movies
-        updateFavoriteMovies(movieId, !isFavorite);
+        markAsFavorite(mediaId, !isFavorite, mediaType);
       });
   
       const playBtn = movieBox.querySelector('.play-btn');
@@ -433,17 +482,18 @@ async function fetchFavoriteMovies() {
         const mediaId = id;
   
         try {
-          const castDetails = await fetchCastDetails('movie', mediaId);
+          const castDetails = await fetchCastDetails(mediaType, mediaId);
           const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
-          const movieYear = release_date ? new Date(release_date).getFullYear() : '';
-          const titleOrName = original_title;
-  
+          const movieYear = release_date ? new Date(release_date).getFullYear() : first_air_date ? new Date(first_air_date).getFullYear() : '';
+          const titleOrName = original_title || name;
+          const voteAverage = parseFloat(vote_average).toFixed(1);
+          
           const movieData = {
             titleOrName,
             poster_path,
             genreNames,
             overview,
-            vote_average,
+            vote_average: voteAverage,
             movieYear,
             cast: castNames,
           };
@@ -625,10 +675,27 @@ async function fetchAndShowMovies(genreId, year) {
 
 async function fetchAndShowType(selectedType) {
   try {
-    const favoriteMedia = await fetchFavoriteMedia(selectedType);
-    const media = await fetchMediaByIds(selectedType, favoriteMedia);
-    showMedia(media.results, selectedType);
-    totalPages = media.total_pages;
+    if (selectedType === '') {
+      // Fetch favorite movies and series from the server
+      const favoriteMovies = await fetchFavoriteMovies('movie');
+      const favoriteSeries = await fetchFavoriteMovies('tv');
+
+      // Fetch details of favorite movies and series
+      const movies = await fetchMoviesByIds('movie', favoriteMovies);
+      const series = await fetchMoviesByIds('tv', favoriteSeries);
+
+      showMedia(movies, 'movie');
+      showMedia(series, 'tv');
+
+      // Calculate total pages based on the longer of movies and series
+      totalPages = Math.max(movies.total_pages, series.total_pages);
+    } else {
+      // Fetch and show details for the selected type
+      const favoriteMedia = await fetchFavoriteMovies(selectedType);
+      const media = await fetchMoviesByIds(selectedType, favoriteMedia);
+      showMedia(media, selectedType);
+      totalPages = media.total_pages;
+    }
 
     // Render pagination links
     renderPagination();
@@ -636,6 +703,7 @@ async function fetchAndShowType(selectedType) {
     console.error('Error:', error.message);
   }
 }
+
 
 async function fetchFavoriteMedia(selectedType) {
   try {
