@@ -1,8 +1,13 @@
 <?php
 session_start();
+
+if (empty($_SESSION['user_id'])) {
+    header("Location: login.php");
+}
+
 $mysqli = require __DIR__ . "/conn.php";
 
-$sql = "SELECT subscription_start_date, subscription_end_date, selected_plan FROM users WHERE id = ?";
+$sql = "SELECT subscription_end_date, selected_plan FROM users WHERE id = ?";
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
@@ -13,10 +18,10 @@ if (!$stmt) {
 $stmt->bind_param("i", $_SESSION["user_id"]);
 
 $stmt->execute();
-$stmt->bind_result($subscriptionStartDate, $subscriptionEndDate, $selectedPlan); // Bind result for both fields
+$stmt->bind_result($subscriptionEndDate, $selectedPlan); // Bind result for both fields
 $stmt->fetch();
 
-$remainingDays = floor((strtotime($subscriptionEndDate) - strtotime($subscriptionStartDate)) / 86400);
+$remainingDays = floor((strtotime($subscriptionEndDate) - strtotime(date("Y-m-d"))) / 86400);
 
 ?>
 
@@ -132,145 +137,119 @@ $remainingDays = floor((strtotime($subscriptionEndDate) - strtotime($subscriptio
     <!--home-->
     <div data-spy="scroll" data-target="navbar" data-offset="0">
         <section class="home container" id="home">
-            <div class="light-style flex-grow-1 container-p-y">
-                <h4 class="font-weight-bold container py-3 mb-4">
-                    Account settings
-                </h4>
-                <div class="profile-card overflow-hidden container">
-                    <div class="row g-0">
-                        <div class="col-md-3 pt-0">
-                            <div class="list-group" id="list-tab" role="tablist">
-                                <a href="#account-general" class="list-group-item list-group-item-action active"
-                                    aria-current="true" data-toggle="list" role="tab"
-                                    onclick="adjustTabHeight()">General</a>
-                                <a href="#account-password" class="list-group-item list-group-item-action"
-                                    data-toggle="list" role="tab" onclick="adjustTabHeight()">Password</a>
-                                <a href="#account-sub" class="list-group-item list-group-item-action" data-toggle="list"
-                                    role="tab" onclick="adjustTabHeight()">Subscription</a>
+            <form method="post" action="update_profile.php" style="width: 100%">
+                <div class="light-style flex-grow-1 container-p-y">
+                    <h4 class="font-weight-bold container py-3 mb-4">
+                        Account settings
+                    </h4>
+                    <div class="profile-card overflow-hidden container">
+                        <div class="row g-0">
+                            <div class="col-md-3 pt-0">
+                                <div class="list-group" id="list-tab" role="tablist">
+                                    <a href="#account-general" class="list-group-item list-group-item-action active"
+                                        aria-current="true" data-toggle="list" role="tab"
+                                        onclick="adjustTabHeight()">General</a>
+                                    <a href="#account-password" class="list-group-item list-group-item-action"
+                                        data-toggle="list" role="tab" onclick="adjustTabHeight()">Password</a>
+                                    <a href="#account-sub" class="list-group-item list-group-item-action"
+                                        data-toggle="list" role="tab" onclick="adjustTabHeight()">Subscription</a>
+                                </div>
+
                             </div>
 
-                        </div>
+                            <div class="col-md-9">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="account-general" role="tabpanel"
+                                        aria-labelledby="general-tab" tabindex="0">
+                                        <div class="profile-card-body media align-items-center p-2">
+                                            <img src="../images/profile.jpg" class="user-img-change">
 
-                        <div class="col-md-9">
-                            <div class="tab-content">
-                                <div class="tab-pane fade show active" id="account-general" role="tabpanel"
-                                    aria-labelledby="general-tab" tabindex="0">
-                                    <div class="profile-card-body media align-items-center p-2">
-                                        <img src="../images/profile.jpg" class="user-img-change">
-                                        <label for="formFile" class="form-label changeimg">
-                                            <input type="text" class="form-control d-none" readonly>
-                                            <button type="button" class="btn btn-outline-primary"
-                                                onclick="document.getElementById('formFile').click()">
-                                                Change profile image
-                                            </button>
-                                            <input class="form-control d-none" type="file" id="formFile">
-                                        </label>
-
-
-                                        <div class="mb-3 row">
-                                            <label for="username" class="col-sm-2 col-form-label">Username</label>
-                                            <div class="col-sm-10">
-                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
-                                                    <input type="text" readonly class="form-control-plaintext" id="username"
-                                                        value="<?= $_SESSION["username"] ?>">
-                                                <?php endif; ?>
+                                            <div class="mb-3 row">
+                                                <label for="username" class="col-sm-2 col-form-label">Username</label>
+                                                <div class="col-sm-10">
+                                                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                        <input type="text" readonly class="form-control-plaintext"
+                                                            id="username" value="<?= $_SESSION["username"] ?>">
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="mb-3 row">
-                                            <label for="staticEmail" class="col-sm col-form-label">Email</label>
-                                            <div class="col-sm-10">
-                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
-                                                    <input type="email" required onChange="onChangeEmail()"
-                                                        class="form-control" id="staticEmail" aria-describedby="emailHelp"
-                                                        value="<?= $_SESSION["email"] ?>">
-                                                <?php endif; ?>
+                                            <div class="mb-3 row">
+                                                <label for="staticEmail" class="col-sm col-form-label">Email</label>
+                                                <div class="col-sm-10">
+                                                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                        <input type="email" readonly 
+                                                            class="form-control-plaintext" id="staticEmail"
+                                                            aria-describedby="emailHelp" value="<?= $_SESSION["email"] ?>">
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="tab-pane fade show" id="account-password" role="tabpanel"
-                                    aria-labelledby="password-tab" tabindex="0">
-                                    <div class="profile-card-body p-2">
-                                        <div class="mb-3 row">
-                                            <label for="currentPassword" class="col-sm col-form-label">Current
-                                                password</label>
-                                            <div class="col-sm-8">
-                                                <input type="password" class="form-control" id="currentPassword">
+                                    <div class="tab-pane fade show" id="account-password" role="tabpanel"
+                                        aria-labelledby="password-tab" tabindex="0">
+                                        <div class="profile-card-body p-2">
+                                            <div class="mb-3 row">
+                                                <label for="newPassword" class="col-sm col-form-label">New
+                                                    password</label>
+                                                <div class="col-sm-8">
+                                                    <input type="password"
+                                                        title="Password must be at least 8 characters."
+                                                        pattern="[a-zA-Z0-9]{8,}" name="password" required
+                                                        onChange="onChangePass()" class="form-control" id="newPassword"
+                                                        aria-describedby="passwordHelp" />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="mb-3 row">
-                                            <label for="newPassword" class="col-sm col-form-label">New
-                                                password</label>
-                                            <div class="col-sm-8">
-                                                <input type="password" title="Password must be at least 8 characters."
-                                                    pattern="[a-zA-Z0-9]{8,}" name="password" required
-                                                    onChange="onChangePass()" class="form-control" id="newPassword"
-                                                    aria-describedby="passwordHelp" />
-                                            </div>
-                                        </div>
-                                        <div class="mb-3 row">
-                                            <label for="repeatPassword" class="col-sm col-form-label">Repeat new
-                                                password</label>
-                                            <div class="col-sm-8">
-                                                <input type="password" name="repeatpassword" required
-                                                    onChange="onChangePass()" class="form-control" id="repeatPassword"
-                                                    aria-describedby="repeatPasswordHelp" />
+                                            <div class="mb-3 row">
+                                                <label for="repeatPassword" class="col-sm col-form-label">Repeat new
+                                                    password</label>
+                                                <div class="col-sm-8">
+                                                    <input type="password" name="repeatpassword" required
+                                                        onChange="onChangePass()" class="form-control"
+                                                        id="repeatPassword" aria-describedby="repeatPasswordHelp" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="tab-pane fade show" id="account-sub" role="tabpanel"
-                                    aria-labelledby="sub-tab" tabindex="0">
-                                    <div class="profile-card-body p-2">
-                                        <div class="mb-3 row">
-                                            <label for="sub" class="col-sm col-form-label">Active plan</label>
-                                            <div class="col-sm-9">
-                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
-                                                    <input type="text" readonly class="form-control-plaintext" id="sub"
-                                                        value="<?php echo $selectedPlan . " months"; ?>">
-                                                <?php endif; ?>
+                                    <div class="tab-pane fade show" id="account-sub" role="tabpanel"
+                                        aria-labelledby="sub-tab" tabindex="0">
+                                        <div class="profile-card-body p-2">
+                                            <div class="mb-3 row">
+                                                <label for="sub" class="col-sm col-form-label">Active plan</label>
+                                                <div class="col-sm-9">
+                                                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                        <input type="text" readonly class="form-control-plaintext" id="sub"
+                                                            value="<?php echo $selectedPlan . " months"; ?>">
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="mb-3 row">
-                                            <label for="change_sub" class="col-sm col-form-label">
-                                                    Extend your plan by
-                                            </label>
-                                            <div class="col-sm-9">
-                                                <select class="form-select form-select-sm"
-                                                    aria-label=".form-select-sm example">
-                                                    <option value="3">3 months</option>
-                                                    <option value="6">6 months</option>
-                                                    <option value="12">12 months</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3 row">
-                                            <div class="col-sm p-1">
-                                                <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
-                                                    <label for="expire_sub" class="alert alert-warning" role="alert">
-                                                        Your plan expires in <?php echo $remainingDays; ?> days.
-                                                    </label>
-                                                <?php endif; ?>
+                                            <div class="mb-3 row">
+                                                <div class="col-sm p-1">
+                                                    <?php if (isset($_SESSION["user_id"], $_SESSION["username"])): ?>
+                                                        <label for="expire_sub" class="alert alert-warning" role="alert">
+                                                            Your plan expires in
+                                                            <?php echo $remainingDays; ?> days.
+                                                        </label>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
+
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
+                    <div class="mt-3 save-cancel container">
+                        <button type="submit" class="btn btn-primary" name="saveChanges">Save changes</button>
+                        <a href="landing_page.php">
+                            <button type="button" class="btn btn-light">Cancel</button>
+                        </a>
+                    </div>
                 </div>
-                <div class="mt-3 save-cancel container">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <a href="landing_page.php">
-                        <button type="button" class="btn btn-light">Cancel</button>
-                    </a>
-                </div>
-            </div>
-
+            </form>
         </section>
     </div>
 

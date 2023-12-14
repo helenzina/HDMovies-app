@@ -7,13 +7,11 @@ const moviesContent = document.getElementById('favoriteMoviesContainer');
 const paginationContainer = document.getElementById('pagination');
 
 let currentPage = 1;
-let totalPages = 0;
+let totalPages;
 let selectedPage = currentPage; // New variable to track the selected page
 
-
-
-const moviesPerPage = 30;
-const pagesToShow = 5;
+const moviesPerPage = 20;
+let pagesToShow = 0;
 
 const searchInput = document.getElementById('search-input');
 
@@ -41,7 +39,7 @@ async function handleSearch() {
       const movies = await fetchMoviesWithPerPage('movie', currentPage);
       showMedia(movies.results, 'movie');
       totalPages = Math.ceil(movies.total_results / moviesPerPage);
-      renderPagination();
+      //renderPagination();
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -51,7 +49,7 @@ async function handleSearch() {
       const searchResults = await searchMovies(query);
       showMedia(searchResults.results, 'movie');
       totalPages = Math.ceil(searchResults.total_results / moviesPerPage);
-      renderPagination();
+      //renderPagination();
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -74,26 +72,20 @@ async function fetchAndShowMedia(selectedType) {
     // Fetch favorite movies and TV series from the server
     const favoriteMovies = await fetchFavoriteMovies('movie');
     const favoriteSeries = await fetchFavoriteMovies('tv');
-
-    if (selectedType === ''){
     const movies = await fetchMoviesByIds('movie', favoriteMovies);
     const series = await fetchMoviesByIds('tv', favoriteSeries);
-    showMedia(movies, 'movie');
-    showMedia(series, 'tv');
-    } else if (selectedType === 'movie'){
-    const movies = await fetchMoviesByIds('movie', favoriteMovies);
-    showMedia(movies, 'movie');
+
+    if (selectedType === '') {
+      showMedia(movies, 'movie');
+      showMedia(series, 'tv');
+    } else if (selectedType === 'movie') {
+      showMedia(movies, 'movie');
     } else {
-    const series = await fetchMoviesByIds('tv', favoriteSeries);
-    showMedia(series, 'tv');
-  }
+      showMedia(series, 'tv');
+    }
 
-
-    // Combine total pages for both movies and TV series
-    totalPages = Math.max(movies.total_pages, series.total_pages);
-
-    // Render pagination links
-    renderPagination();
+    totalPages = Math.max(Math.ceil(movies.length / moviesPerPage), Math.ceil(series.length / moviesPerPage));
+    renderPagination(totalPages);
   } catch (error) {
     console.error('Error fetching and showing media:', error.message);
   }
@@ -114,17 +106,19 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       // Fetch and show media based on the selected type
       await fetchAndShowType(selectedType);
+      renderPagination(totalPages);
     });
 
     // Fetch and display the initial page of favorite movies and TV series
     await fetchAndShowMedia(selectedType);
+    renderPagination(totalPages);
   } catch (error) {
     console.error('Error:', error.message);
   }
 });
 
 
-function renderPagination() {
+function renderPagination(totalPages) {
   paginationContainer.innerHTML = '';
 
   // Calculate the start and end pages to display
@@ -134,13 +128,6 @@ function renderPagination() {
   if (endPage > totalPages) {
     endPage = totalPages;
     startPage = Math.max(1, endPage - pagesToShow + 1);
-  }
-
-
-  const noMoviesMessage = document.querySelector('.nomovies');
-  if (noMoviesMessage) {
-    paginationContainer.innerHTML = '';
-    return;
   }
 
   // Add "Previous" button
@@ -155,6 +142,7 @@ function renderPagination() {
       break;
     }
   }
+
   // Add "Next" button
   const nextButton = createPaginationButton('Next', 'next', currentPage === totalPages);
   paginationContainer.appendChild(nextButton);
@@ -206,19 +194,25 @@ async function changePage(direction) {
       currentPage = newPage;
       selectedPage = newPage;
 
+
       const query = searchInput.value.trim();
       const selectedGenre = GENRE_SELECT.value;
       const selectedYear = YEAR_SELECT.value;
+      const selectedType = TYPE_SELECT.value;
+
 
       if (query === '') {
-        const movies = await fetchMoviesByGenreAndYear('movie', currentPage, selectedGenre, selectedYear);
-        showMedia(movies.results, 'movie');
+        if (selectedType === ''){
+          await fetchAndShowType(selectedType);
+        } else {
+          await fetchAndShowMedia(selectedType);
+        }
       } else {
         const searchResults = await searchMovies(query);
         showMedia(searchResults.results, 'movie');
       }
 
-      renderPagination();
+      renderPagination(totalPages);
     }
   } catch (error) {
     console.error('Error:', error.message);
@@ -238,11 +232,11 @@ async function fetchGenres(mediaType) {
   return window[`${mediaType}GenreNames`];
 }
 
-async function fetchMoviesWithPerPage(mediaType, page) {
-  const API_URL = BASE_URL + `discover/${mediaType}?${API_KEY}&page=${page}&per_page=${moviesPerPage}`;
-  const response = await fetch(API_URL);
-  return await response.json();
-}
+//async function fetchMoviesWithPerPage(mediaType, page) {
+//  const API_URL = BASE_URL + `discover/${mediaType}?${API_KEY}&page=${page}&per_page=${moviesPerPage}`;
+//  const response = await fetch(API_URL);
+//  return await response.json();
+//}
 
 async function fetchCastDetails(mediaType, mediaId) {
   try {
@@ -290,7 +284,7 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
 
     if (data.success) {
       console.log(`${mediaType} ${mediaId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
-      
+
       // Update localStorage based on the favorite status
       let favoriteMedia = JSON.parse(localStorage.getItem(`favorite${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}`)) || [];
       console.log(favoriteMedia);
@@ -314,116 +308,117 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
 async function fetchMoviesByIds(mediaType, movieIds) {
   try {
 
-      const media = [];
+    const media = [];
 
-      for (const mediaId of movieIds) {
-          // Customize the API endpoint based on your API structure
-          const API_URL = `${BASE_URL}${mediaType}/${mediaId}?${API_KEY}&language=en-US`;
+    for (const mediaId of movieIds) {
+      // Customize the API endpoint based on your API structure
+      const API_URL = `${BASE_URL}${mediaType}/${mediaId}?${API_KEY}&language=en-US`;
 
-          const response = await fetch(API_URL);
-          const mediaData = await response.json();
+      const response = await fetch(API_URL);
+      const mediaData = await response.json();
 
-          // Assuming mediaData contains the details of a single media
-          media.push(mediaData);
-      }
+      // Assuming mediaData contains the details of a single media
+      media.push(mediaData);
+    }
 
-      return media;
+    return media;
   } catch (error) {
-      console.error(`Error fetching ${mediaType}s by IDs:`, error.message);
-      throw new Error(`Failed to fetch ${mediaType}s by IDs`);
+    console.error(`Error fetching ${mediaType}s by IDs:`, error.message);
+    throw new Error(`Failed to fetch ${mediaType}s by IDs`);
   }
 }
 
-  
+
 
 async function fetchFavoriteMovies(mediaType) {
-    try {
-      const response = await fetch('favourite.php');
-      
-      // Check if the response has JSON content type
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType && contentType.includes('application/json')) {
-        // Parse JSON response
-        const data = await response.json();
+  try {
+    const response = await fetch('favourite.php');
 
-          if (mediaType === 'movie') {
-            return data.favoriteMovies;
-          } else if (mediaType === 'tv') {
-            return data.favoriteSeries;
-          }
+    // Check if the response has JSON content type
+    const contentType = response.headers.get('content-type');
 
-      } else {
-        // Handle non-JSON response
-        const responseText = await response.text();
-        const closingBracketPosition = responseText.indexOf('}');
-        const trimmedResponse = responseText.substring(0, closingBracketPosition + 1);
-  
-        try {
-          // Parse the trimmed JSON-like response
-          const trimmedData = JSON.parse(trimmedResponse);
-          if (mediaType === 'movie') {
-            localStorage.setItem('favoriteMovies', JSON.stringify(trimmedData.favoriteMovies));
-            return trimmedData.favoriteMovies;
-          } else if (mediaType === 'tv') {
-            localStorage.setItem('favoriteSeries', JSON.stringify(trimmedData.favoriteSeries));
-            return trimmedData.favoriteSeries;
-          }
-        } catch (parseError) {
-          console.error('Error parsing trimmed response:', parseError.message);
-          // You might want to return an empty array or handle this case differently
-          return [];
-        }
+    if (contentType && contentType.includes('application/json')) {
+      // Parse JSON response
+      const data = await response.json();
+
+      if (mediaType === 'movie') {
+        return data.favoriteMovies;
+      } else if (mediaType === 'tv') {
+        return data.favoriteSeries;
       }
-    } catch (error) {
-      console.error('Error fetching favorite media:', error.message);
-      throw new Error('Failed to fetch favorite media');
-    }
-  }
-  
 
-  async function showMedia(data, mediaType) {  
-    moviesContent.innerHTML = '';
-  
-    if (data.length === 0) {
-      // Display a message when there are no search results
-      moviesContent.innerHTML = `
-        <section class="movies container" id="movies"> 
-          <br/>       
-          <p class="nomovies">No movies found.</p>
-          <div class="movies-content" id="moviesContent">
-            <div class="movie-box"></div> 
-          </div>
-        </section>`;
-  
-      // Adjust the height of the page
-      document.body.style.minHeight = "50rem";
-      document.querySelector('.copyright').style.padding = '0rem';
-  
-      return;
     } else {
-      document.body.style.minHeight = "100rem";
-      document.querySelector('.copyright').style.padding = '12rem';
+      // Handle non-JSON response
+      const responseText = await response.text();
+      const closingBracketPosition = responseText.indexOf('}');
+      const trimmedResponse = responseText.substring(0, closingBracketPosition + 1);
+
+      try {
+        // Parse the trimmed JSON-like response
+        const trimmedData = JSON.parse(trimmedResponse);
+        if (mediaType === 'movie') {
+          localStorage.setItem('favoriteMovies', JSON.stringify(trimmedData.favoriteMovies));
+          return trimmedData.favoriteMovies;
+        } else if (mediaType === 'tv') {
+          localStorage.setItem('favoriteSeries', JSON.stringify(trimmedData.favoriteSeries));
+          return trimmedData.favoriteSeries;
+        }
+      } catch (parseError) {
+        console.error('Error parsing trimmed response:', parseError.message);
+        // You might want to return an empty array or handle this case differently
+        return [];
+      }
     }
-  
+  } catch (error) {
+    console.error('Error fetching favorite media:', error.message);
+    throw new Error('Failed to fetch favorite media');
+  }
+}
+
+
+async function showMedia(data, mediaType) {
+  moviesContent.innerHTML = '';
+
+  if (data.length === 0) {
+    // Display a message when there are no search results
+    /*
+    moviesContent.innerHTML = `
+      <section class="movies container" id="movies"> 
+        <br/>       
+        <p class="nomovies">No movies found.</p>
+        <div class="movies-content" id="moviesContent">
+          <div class="movie-box"></div> 
+        </div>
+      </section>`;
+    */
+    // Adjust the height of the page
+    document.body.style.minHeight = "50rem";
+    document.querySelector('.copyright').style.padding = '0rem';
+
+    return;
+  } else {
+    document.body.style.minHeight = "80rem";
+    //document.querySelector('.copyright').style.padding = '12rem';
+  }
+
   // Fetch favorite movies and TV series from the server
 
   const favoriteMovies = await fetchFavoriteMovies('movie');
   const favoriteSeries = await fetchFavoriteMovies('tv');
 
   const favoriteMedia = [...favoriteMovies, ...favoriteSeries];
-  
-    data.forEach(media => {
-      const { id, original_title, name, poster_path, genres, overview, vote_average, release_date, first_air_date } = media;
-      const movieBox = document.createElement('div');
-      movieBox.classList.add('movie-box');
 
-      const genreNames = getGenreNamesString(genres, mediaType);
-  
-      // Check if the movie is a favorite
-      const isFavorite = favoriteMedia.includes(id);
-  
-      movieBox.innerHTML = `
+  data.forEach(media => {
+    const { id, original_title, name, poster_path, genres, overview, vote_average, release_date, first_air_date } = media;
+    const movieBox = document.createElement('div');
+    movieBox.classList.add('movie-box');
+
+    const genreNames = getGenreNamesString(genres, mediaType);
+
+    // Check if the movie is a favorite
+    const isFavorite = favoriteMedia.includes(id);
+
+    movieBox.innerHTML = `
         <img src="${IMG_URL + poster_path}" class="movie-box-img">
         <div class="box-text">
           <h2 class="movie-title">${original_title || name}</h2>
@@ -436,89 +431,91 @@ async function fetchFavoriteMovies(mediaType) {
             <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${id}"></i>
           </a>
         </div>`;
-  
-      const favBtn = movieBox.querySelector('.fav-btn');
-      const plusIcon = favBtn.querySelector('.bi-plus-circle');
-      const heartIcon = favBtn.querySelector('.bi-heart-fill');
-  
-      if (isFavorite) {
-        // If the movie is a favorite, display the heart icon
+
+    const favBtn = movieBox.querySelector('.fav-btn');
+    const plusIcon = favBtn.querySelector('.bi-plus-circle');
+    const heartIcon = favBtn.querySelector('.bi-heart-fill');
+
+    if (isFavorite) {
+      // If the movie is a favorite, display the heart icon
+      plusIcon.style.display = 'none';
+      heartIcon.style.display = 'flex';
+    } else {
+      // If the movie is not a favorite, display the plus icon
+      plusIcon.style.display = 'flex';
+      heartIcon.style.display = 'none';
+    }
+
+    favBtn.dataset.mediaId = id;
+    favBtn.dataset.isFavorite = isFavorite.toString();
+    plusIcon.id = `plusIcon_${id}`;
+    heartIcon.id = `heartIcon_${id}`;
+
+    favBtn.addEventListener('click', async () => {
+      const mediaId = favBtn.dataset.mediaId;
+      const isFavorite = favBtn.dataset.isFavorite === 'true';
+
+      if (!isFavorite) {
+        // If the movie is not a favorite, mark it as favorite and display the heart icon
         plusIcon.style.display = 'none';
         heartIcon.style.display = 'flex';
       } else {
-        // If the movie is not a favorite, display the plus icon
+        // If the movie is already a favorite, unmark it and display the plus icon
         plusIcon.style.display = 'flex';
         heartIcon.style.display = 'none';
       }
-  
-      favBtn.dataset.mediaId = id;
-      favBtn.dataset.isFavorite = isFavorite.toString();
-      plusIcon.id = `plusIcon_${id}`;
-      heartIcon.id = `heartIcon_${id}`;
-  
-      favBtn.addEventListener('click', async () => {
-        const mediaId = favBtn.dataset.mediaId;
-        const isFavorite = favBtn.dataset.isFavorite === 'true';
-  
-        if (!isFavorite) {
-          // If the movie is not a favorite, mark it as favorite and display the heart icon
-          plusIcon.style.display = 'none';
-          heartIcon.style.display = 'flex';
-        } else {
-          // If the movie is already a favorite, unmark it and display the plus icon
-          plusIcon.style.display = 'flex';
-          heartIcon.style.display = 'none';
-        }
-  
-        // Toggle the favorite status
-        favBtn.dataset.isFavorite = (!isFavorite).toString();
-  
-        // Send a request to mark the movie as a favorite
-        markAsFavorite(mediaId, !isFavorite, mediaType);
-      });
-  
-      const playBtn = movieBox.querySelector('.play-btn');
-      playBtn.addEventListener('click', async () => {
-        const mediaId = id;
-  
-        try {
-          const castDetails = await fetchCastDetails(mediaType, mediaId);
-          const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
-          const movieYear = release_date ? new Date(release_date).getFullYear() : first_air_date ? new Date(first_air_date).getFullYear() : '';
-          const titleOrName = original_title || name;
-          const voteAverage = parseFloat(vote_average).toFixed(1);
-          
-          const movieData = {
-            titleOrName,
-            poster_path,
-            genreNames,
-            overview,
-            vote_average: voteAverage,
-            movieYear,
-            cast: castNames,
-          };
-  
-          const movieDataJson = JSON.stringify(movieData);
-  
-          localStorage.setItem('movieData', movieDataJson);
-  
-          const movieTitle = encodeURIComponent(movieData.titleOrName);
-  
-          window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
-        } catch (error) {
-          console.error('Error:', error.message);
-        }
-      });
-  
-      moviesContent.appendChild(movieBox);
+
+      // Toggle the favorite status
+      favBtn.dataset.isFavorite = (!isFavorite).toString();
+
+      // Send a request to mark the movie as a favorite
+      markAsFavorite(mediaId, !isFavorite, mediaType);
     });
-  }
-  
+
+    const playBtn = movieBox.querySelector('.play-btn');
+    playBtn.addEventListener('click', async () => {
+      const mediaId = id;
+
+      try {
+        const castDetails = await fetchCastDetails(mediaType, mediaId);
+        const castNames = castDetails.cast.slice(0, 5).map(member => member.name);
+        const movieYear = release_date ? new Date(release_date).getFullYear() : first_air_date ? new Date(first_air_date).getFullYear() : '';
+        const titleOrName = original_title || name;
+        const voteAverage = parseFloat(vote_average).toFixed(1);
+
+        const movieData = {
+          titleOrName,
+          poster_path,
+          genreNames,
+          overview,
+          vote_average: voteAverage,
+          movieYear,
+          cast: castNames,
+        };
+
+        const movieDataJson = JSON.stringify(movieData);
+
+        localStorage.setItem('movieData', movieDataJson);
+
+        const movieTitle = encodeURIComponent(movieData.titleOrName);
+
+        window.location.href = `play.php?title=${movieTitle}&year=${movieYear}`;
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    });
+
+    moviesContent.appendChild(movieBox);
+  });
+  totalPages = Math.ceil(data.length / moviesPerPage);
+  renderPagination(totalPages);
+}
+
 
 function getGenreNamesString(genreIds, mediaType) {
 
   if (Array.isArray(genreIds)) {
-  const genreNamesArray = genreIds.map(genre => genre.name);
+    const genreNamesArray = genreIds.map(genre => genre.name);
     return genreNamesArray.join(', ');
   } else {
     return 'Genre information not available';
@@ -626,7 +623,7 @@ function populateType(selectElement, options) {
 // Add these event listeners to handle genre and year changes
 GENRE_SELECT.addEventListener('change', handleGenreChange);
 YEAR_SELECT.addEventListener('change', handleYearChange);
-TYPE_SELECT.addEventListener('change', handleTypeChange);
+//TYPE_SELECT.addEventListener('change', handleTypeChange);
 
 async function handleGenreChange() {
   currentPage = 1;
@@ -650,15 +647,6 @@ async function handleYearChange() {
   await fetchAndShowMovies(selectedGenre, selectedYear);
 }
 
-async function handleTypeChange() {
-  currentPage = 1;
-  selectedPage = 1;
-  searchInput.value = '';
-
-  const selectedType = TYPE_SELECT.value;
-
-  await fetchAndShowType(selectedType);
-}
 
 async function fetchAndShowMovies(genreId, year) {
   try {
@@ -688,17 +676,17 @@ async function fetchAndShowType(selectedType) {
       showMedia(series, 'tv');
 
       // Calculate total pages based on the longer of movies and series
-      totalPages = Math.max(movies.total_pages, series.total_pages);
+      totalPages = Math.max(Math.ceil(movies.length / moviesPerPage), Math.ceil(series.length / moviesPerPage));
     } else {
       // Fetch and show details for the selected type
       const favoriteMedia = await fetchFavoriteMovies(selectedType);
       const media = await fetchMoviesByIds(selectedType, favoriteMedia);
       showMedia(media, selectedType);
-      totalPages = media.total_pages;
+      totalPages = Math.ceil(media.length / moviesPerPage);
     }
 
     // Render pagination links
-    renderPagination();
+    renderPagination(totalPages);
   } catch (error) {
     console.error('Error:', error.message);
   }

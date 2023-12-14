@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+if(empty($_SESSION['user_id'])){
+    header("Location: login.php");
+ }
+
 $mysqli = require __DIR__ . "/conn.php";
 require __DIR__ . "/../vendor/autoload.php";
 

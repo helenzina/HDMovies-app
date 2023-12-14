@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if(empty($_SESSION['user_id'])){
+  header("Location: login.php");
+}
+
 require __DIR__ . "/conn.php";
 
 error_reporting(E_ALL);

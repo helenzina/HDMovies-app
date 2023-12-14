@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+if (empty($_SESSION['user_id'])) {
+    header("Location: login.php");
+}
+
 $mysqli = require __DIR__ . "/conn.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
@@ -80,6 +85,7 @@ $outputData = [
 
 // Encode and echo the combined results
 echo json_encode($outputData);
+
 ?>
 
 
@@ -99,6 +105,7 @@ echo json_encode($outputData);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
 
 
     <link rel="icon" type="../images/logo.png" href="../images/logo.png" />
@@ -221,13 +228,15 @@ echo json_encode($outputData);
 
         </section>
 
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center" id="pagination">
+
+            </ul>
+        </nav>
+
     </div>
 
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center" id="pagination">
 
-        </ul>
-    </nav>
 
     <!--copyright-->
     <div class="copyright">
@@ -239,6 +248,7 @@ echo json_encode($outputData);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <script src="../js/main.js"></script>
     <script src="../js/favourite.js"></script>
