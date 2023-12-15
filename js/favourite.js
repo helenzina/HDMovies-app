@@ -11,7 +11,7 @@ let totalPages;
 let selectedPage = currentPage; // New variable to track the selected page
 
 const moviesPerPage = 20;
-let pagesToShow = 0;
+let pagesToShow = 5;
 
 const searchInput = document.getElementById('search-input');
 
@@ -84,7 +84,7 @@ async function fetchAndShowMedia(selectedType) {
       showMedia(series, 'tv');
     }
 
-    totalPages = Math.max(Math.ceil(movies.length / moviesPerPage), Math.ceil(series.length / moviesPerPage));
+    //totalPages = Math.max(Math.ceil(movies.length / moviesPerPage), Math.ceil(series.length / moviesPerPage));
     renderPagination(totalPages);
   } catch (error) {
     console.error('Error fetching and showing media:', error.message);
@@ -194,23 +194,22 @@ async function changePage(direction) {
       currentPage = newPage;
       selectedPage = newPage;
 
-
-      const query = searchInput.value.trim();
-      const selectedGenre = GENRE_SELECT.value;
-      const selectedYear = YEAR_SELECT.value;
+      //const query = searchInput.value.trim();
+      //const selectedGenre = GENRE_SELECT.value;
+      //const selectedYear = YEAR_SELECT.value;
       const selectedType = TYPE_SELECT.value;
 
 
-      if (query === '') {
+      //if (query === '') {
         if (selectedType === ''){
           await fetchAndShowType(selectedType);
         } else {
           await fetchAndShowMedia(selectedType);
         }
-      } else {
-        const searchResults = await searchMovies(query);
-        showMedia(searchResults.results, 'movie');
-      }
+      //} else {
+      //  const searchResults = await searchMovies(query);
+      //  showMedia(searchResults.results, 'movie');
+      //}
 
       renderPagination(totalPages);
     }
@@ -248,6 +247,8 @@ async function fetchCastDetails(mediaType, mediaId) {
     throw new Error('Error fetching cast details');
   }
 }
+
+
 
 async function markAsFavorite(mediaId, isFavorite, mediaType) {
   try {
@@ -303,33 +304,6 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
   }
 }
 
-
-
-async function fetchMoviesByIds(mediaType, movieIds) {
-  try {
-
-    const media = [];
-
-    for (const mediaId of movieIds) {
-      // Customize the API endpoint based on your API structure
-      const API_URL = `${BASE_URL}${mediaType}/${mediaId}?${API_KEY}&language=en-US`;
-
-      const response = await fetch(API_URL);
-      const mediaData = await response.json();
-
-      // Assuming mediaData contains the details of a single media
-      media.push(mediaData);
-    }
-
-    return media;
-  } catch (error) {
-    console.error(`Error fetching ${mediaType}s by IDs:`, error.message);
-    throw new Error(`Failed to fetch ${mediaType}s by IDs`);
-  }
-}
-
-
-
 async function fetchFavoriteMovies(mediaType) {
   try {
     const response = await fetch('favourite.php');
@@ -375,6 +349,29 @@ async function fetchFavoriteMovies(mediaType) {
   }
 }
 
+async function fetchMoviesByIds(mediaType, movieIds) {
+  try {
+
+    const media = [];
+
+    for (const mediaId of movieIds) {
+      // Customize the API endpoint based on your API structure
+      const API_URL = `${BASE_URL}${mediaType}/${mediaId}?${API_KEY}&language=en-US`;
+
+      const response = await fetch(API_URL);
+      const mediaData = await response.json();
+
+      // Assuming mediaData contains the details of a single media
+      media.push(mediaData);
+    }
+
+    return media;
+  } catch (error) {
+    console.error(`Error fetching ${mediaType}s by IDs:`, error.message);
+    throw new Error(`Failed to fetch ${mediaType}s by IDs`);
+  }
+}
+
 
 async function showMedia(data, mediaType) {
   moviesContent.innerHTML = '';
@@ -407,8 +404,21 @@ async function showMedia(data, mediaType) {
   const favoriteSeries = await fetchFavoriteMovies('tv');
 
   const favoriteMedia = [...favoriteMovies, ...favoriteSeries];
+  
+  const totalPagesMovies = Math.ceil(favoriteMovies.length / moviesPerPage);
+  const totalPagesSeries = Math.ceil(favoriteSeries.length / moviesPerPage);
+  if (TYPE_SELECT.value ===''){
+    totalPages = Math.ceil(favoriteMedia.length / moviesPerPage);
+  } else {
+    totalPages = mediaType === 'movie' ? totalPagesMovies : totalPagesSeries;
+  }
 
-  data.forEach(media => {
+  const startIndex = (currentPage - 1) * moviesPerPage;
+  const endIndex = startIndex + moviesPerPage;
+  const paginatedData = data.slice(startIndex, endIndex);
+
+
+  paginatedData.forEach(media => {
     const { id, original_title, name, poster_path, genres, overview, vote_average, release_date, first_air_date } = media;
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
@@ -507,7 +517,15 @@ async function showMedia(data, mediaType) {
 
     moviesContent.appendChild(movieBox);
   });
-  totalPages = Math.ceil(data.length / moviesPerPage);
+
+  //const totalPagesMovies = Math.ceil(favoriteMovies.length / moviesPerPage);
+  //const totalPagesSeries = Math.ceil(favoriteSeries.length / moviesPerPage);
+  //if (TYPE_SELECT.value ===''){
+  //  totalPages = Math.ceil(favoriteMedia.length / moviesPerPage);
+  //} else {
+  //  totalPages = mediaType === 'movie' ? totalPagesMovies : totalPagesSeries;
+  //}
+
   renderPagination(totalPages);
 }
 
