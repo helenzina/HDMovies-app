@@ -99,8 +99,6 @@ function calculateMaxCards() {
   return maxCardsPerItem;
 }
 
-
-
 function showMedia(data, mediaType, maxCardsPerItem, carouselIndex) {
   const carousel = carousels[carouselIndex];
   const carouselInner = carousel.querySelector('.carousel-inner');
@@ -148,6 +146,13 @@ function showMedia(data, mediaType, maxCardsPerItem, carouselIndex) {
         mediaCard.style.margin = '0 auto';
       }
 
+      let type;
+      if (mediaType === 'movie'){
+        type = 'movies';
+      } else if (mediaType === 'tv'){
+        type = 'series';
+      }
+
       // Populate the card with media information
       mediaCard.innerHTML = `
         <img src="${IMG_URL + poster_path}" class="card-img-top" alt="${title || name}">
@@ -159,10 +164,9 @@ function showMedia(data, mediaType, maxCardsPerItem, carouselIndex) {
               </a>
             </div>
             <div>
-        <a href="#" class="fav-btn" data-movie-id="${media.id}" data-is-favorite="false">
-          <i class="bi bi-plus-circle card-icon bi-plus-circle-movie" id="plusIcon_${media.id}"></i>
-          <i class="bi bi-heart-fill card-icon bi-heart-fill-movie" id="heartIcon_${media.id}"></i>
-        </a>
+            <a href="${type}.php" class="">
+            <i class="bi bi-arrow-right-circle card-icon"></i>
+            </a>
             </div>
           </section>
           <span class="d-flex justify-content-between">
@@ -173,6 +177,7 @@ function showMedia(data, mediaType, maxCardsPerItem, carouselIndex) {
         </div>
       `;
 
+      /*
       const favBtn = mediaCard.querySelector('.fav-btn');
       const plusIcon = favBtn.querySelector('.bi-plus-circle');
       const heartIcon = favBtn.querySelector('.bi-heart-fill');
@@ -203,6 +208,7 @@ function showMedia(data, mediaType, maxCardsPerItem, carouselIndex) {
       
         // You can perform additional actions based on the favorite status here
       });
+      */
 
       const playBtn = mediaCard.querySelector('.my-play-btn');
       playBtn.addEventListener('click', async () => {

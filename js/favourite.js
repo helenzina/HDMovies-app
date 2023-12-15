@@ -249,10 +249,9 @@ async function fetchCastDetails(mediaType, mediaId) {
 }
 
 
-
 async function markAsFavorite(mediaId, isFavorite, mediaType) {
   try {
-    const response = await fetch('favourite.php', {
+    const response = await fetch('getFavourite.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -289,6 +288,7 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
       // Update localStorage based on the favorite status
       let favoriteMedia = JSON.parse(localStorage.getItem(`favorite${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}`)) || [];
       console.log(favoriteMedia);
+
       if (isFavorite) {
         favoriteMedia.push(mediaId);
       } else {
@@ -306,7 +306,7 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
 
 async function fetchFavoriteMovies(mediaType) {
   try {
-    const response = await fetch('favourite.php');
+    const response = await fetch('getFavourite.php');
 
     // Check if the response has JSON content type
     const contentType = response.headers.get('content-type');
@@ -391,10 +391,10 @@ async function showMedia(data, mediaType) {
     // Adjust the height of the page
     document.body.style.minHeight = "50rem";
     document.querySelector('.copyright').style.padding = '0rem';
-
+    document.querySelector('.movies.container').style.margin = '0 auto';
     return;
   } else {
-    document.body.style.minHeight = "80rem";
+    document.body.style.minHeight = "70rem";
     //document.querySelector('.copyright').style.padding = '12rem';
   }
 

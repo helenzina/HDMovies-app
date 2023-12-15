@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
             $stmt->bind_param('ii', $userId, $mediaId);
 
             if ($stmt->execute()) {
-                echo json_encode(['success' => true]);
+                echo json_encode(['success' => true, 'mediaId' => $mediaId, 'mediaType' => $mediaType]);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Failed to update database']);
             }
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
             $stmt->bind_param('ii', $userId, $mediaId);
 
             if ($stmt->execute()) {
-                echo json_encode(['success' => true]);
+                echo json_encode(['success' => true, 'mediaId' => $mediaId, 'mediaType' => $mediaType]);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Failed to update database']);
             }
@@ -77,14 +77,6 @@ foreach ($favoriteSeries as $favoriteItem) {
     $favoriteSeriesData[] = $favoriteItem['serie_id'];
 }
 
-// Combine the results into a single associative array
-$outputData = [
-    'favoriteMovies' => $favoriteMoviesData,
-    'favoriteSeries' => $favoriteSeriesData,
-];
-
-// Encode and echo the combined results
-echo json_encode($outputData);
 
 ?>
 
@@ -105,7 +97,7 @@ echo json_encode($outputData);
     
     <link rel="icon" type="../images/logo.png" href="../images/logo.png" />
     <link rel="stylesheet" href="../css/landing.css">
-    <link rel="stylesheet" href="../css/movies.css">
+    <link rel="stylesheet" href="../css/favourite.css">
 
     <title>HDMovies - Watch TV Shows Online, Watch Movies Online</title>
 
@@ -113,7 +105,7 @@ echo json_encode($outputData);
 
 </head>
 
-<body style="min-height: 50rem;">
+<body>
     <header>
         <!--nav-->
         <div class="nav container">
@@ -165,9 +157,9 @@ echo json_encode($outputData);
             </div>
 
             <!--search-->
-            <div class="search-box">
+            <div class="search-box d-none">
                 <input type="search" name="" id="search-input" placeholder="Search...">
-                <i class="bi bi-search"> </i>
+                <i class="bi bi-search"></i>
             </div>
             <!--user-->
 

@@ -245,7 +245,7 @@ async function fetchCastDetails(mediaType, mediaId) {
 
 async function markAsFavorite(mediaId, isFavorite, mediaType) {
   try {
-    const response = await fetch('favourite.php', {
+    const response = await fetch('getFavourite.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -313,7 +313,7 @@ async function fetchMoviesByIds(movieIds) {
 
 async function fetchFavoriteMovies() {
   try {
-    const response = await fetch('favourite.php');
+    const response = await fetch('getFavourite.php');
     
     // Check if the response has JSON content type
     const contentType = response.headers.get('content-type');
