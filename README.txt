@@ -8,6 +8,9 @@ Name on card: {your_name}
 Country: {your_country}
 
 
+Most of the user accounts saved in the database's users table have the password 'abcd1234' unless you change it in the profile settings.
+
+
 In case you experience problems using Stripe API, please try the following steps:
 
 1. You need to delete the folder 'vendor' in the project and the files: 'composer.json' and 'composer.lock'.

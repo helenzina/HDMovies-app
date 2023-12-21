@@ -285,6 +285,18 @@ async function markAsFavorite(mediaId, isFavorite, mediaType) {
     if (data.success) {
       console.log(`${mediaType} ${mediaId} marked as ${isFavorite ? 'favorite' : 'unfavorite'}`);
 
+      const movieBox = document.getElementById(mediaId);
+
+      if (!movieBox) {
+        console.error(`Movie box with ID ${mediaId} not found`);
+        return;
+      }
+  
+      if (!isFavorite) {
+        // If marking as unfavorite, hide the movie box
+        movieBox.style.display = 'none';
+      }
+
       // Update localStorage based on the favorite status
       let favoriteMedia = JSON.parse(localStorage.getItem(`favorite${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}`)) || [];
       console.log(favoriteMedia);
@@ -392,6 +404,7 @@ async function showMedia(data, mediaType) {
     document.body.style.minHeight = "50rem";
     document.querySelector('.copyright').style.padding = '0rem';
     document.querySelector('.movies.container').style.margin = '0 auto';
+    document.getElementById('pagination').style.display='none';
     return;
   } else {
     document.body.style.minHeight = "70rem";
@@ -422,6 +435,7 @@ async function showMedia(data, mediaType) {
     const { id, original_title, name, poster_path, genres, overview, vote_average, release_date, first_air_date } = media;
     const movieBox = document.createElement('div');
     movieBox.classList.add('movie-box');
+    movieBox.id = id;
 
     const genreNames = getGenreNamesString(genres, mediaType);
 

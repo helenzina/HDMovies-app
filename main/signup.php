@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <label for="username" class="form-label small-text">Username</label>
                     <input type="text" title="Username must be 5-20 characters long and contain letters and numbers."
                         pattern="^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,20}$" name="username" required
-                        onChange="checkUsernameAvailability()" class="form-control border-0 p-0" id="username"
+                        class="form-control border-0 p-0" id="username"
                         aria-describedby="usernameHelp" />
                 </div>
 
