@@ -81,6 +81,7 @@ foreach ($favoriteSeries as $favoriteItem) {
 ?>
 
 
+
 <!doctype html>
 <html lang="en">
 
