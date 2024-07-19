@@ -26,7 +26,7 @@ This project was built with the following:
  ## About The Project
  
 <p align="center">
-<img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/run.gif" width="500" title="run"/>
+<img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/run.gif"  title="run"/>
 </p>
 
 HDMovies-app is a streaming service that allows users to watch a wide variety of movies, TV shows, documentaries, and more on thousands of internet-connected devices. Enjoy unlimited viewing of our content without having to watch a single commercial.
@@ -36,7 +36,7 @@ HDMovies-app is a streaming service that allows users to watch a wide variety of
  ### Installation
  
 <p>Please follow the following steps for successful installation:</p>
-s
+
 1. Clone the repo inside the 
    ```sh
    gh repo clone helenzina/HDMovies-app
@@ -124,135 +124,156 @@ Here are some screenshots of the web application running showing the features me
   <tr>
     <td>
      Index page
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/index.png" width="200" title="index"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/index.png"  title="index"/>
     </td>
     <td>
      Login page
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/login.png" width="200" title="login"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/login.png"  title="login"/>
     </td>
     <td>
      Login with "Remember Me" checked
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/cookie.png" width="200" title="cookie"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/cookie.png"  title="cookie"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Signup page (1)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-1.png" width="200" title="signup"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-1.png"  title="signup"/>
     </td>
     <td>
      Signup page (2)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-2.png" width="200" title="signup"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-2.png"  title="signup"/>
     </td>
     <td>
      Signup page (3)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-3.png" width="200" title="signup"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/signup-3.png"  title="signup"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Subscription page
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/subscription.png" width="200" title="subscription"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/subscription.png"  title="subscription"/>
     </td>
     <td>
      Stripe (payment)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/stripe.png" width="200" title="stripe"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/stripe.png"  title="stripe"/>
     </td>
     <td>
      Successful payment
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/success.png" width="200" title="success"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/success.png"  title="success"/>
     </td>
     <td>
      Successful payment registered in database
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/subscription_renewal_in_db.png" width="200" title="subscription_renewal_in_db"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/subscription_renewal_in_db.png"  title="subscription_renewal_in_db"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Landing page (1)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/landing_page-1.png" width="200" title="landing_page-1"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/landing_page-1.png"  title="landing_page-1"/>
     </td>
     <td>
      Landing page (2)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/landing_page-2.png" width="200" title="landing_page-2"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/landing_page-2.png"  title="landing_page-2"/>
     </td>
     <td>
      Watch trailer - Home
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/watch_trailer.png" width="200" title="watch_trailer"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/watch_trailer.png"  title="watch_trailer"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Landing page - Popular movies section
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/popular_movie.png" width="200" title="popular_movie"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/popular_movie.png"  title="popular_movie"/>
     </td>
     <td>
      Landing page - Popular series section
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/popular_serie.png" width="200" title="popular_serie"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/popular_serie.png"  title="popular_serie"/>
     </td>
     <td>
      Play page example
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/play_url.png" width="200" title="play"/>
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/play.png" width="200" title="play"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/play_url.png"  title="play"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/play.png"  title="play"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Movies page (1)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies-1.png" width="200" title="movies-1"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies-1.png"  title="movies-1"/>
     </td>
     <td>
      Movies page (2)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies-2.png" width="200" title="movies-2"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies-2.png"  title="movies-2"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Series page (1)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series-1.png" width="200" title="series-1"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series-1.png"  title="series-1"/>
     </td>
     <td>
      Series page (2)
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series-2.png" width="200" title="series-2"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series-2.png"  title="series-2"/>
     </td>
     <td>
      Search example
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/search.png" width="200" title="search"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/search.png"  title="search"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Adding movies to favourite
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies_to_fav.png" width="200" title="movies_to_fav"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/movies_to_fav.png"  title="movies_to_fav"/>
     </td>
     <td>
      Adding series to favourite
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series_to_fav.png" width="200" title="series_to_fav"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/series_to_fav.png"  title="series_to_fav"/>
     </td>
     <td>
      Favourite movies registered in database 
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/fav_movies_in_db.png" width="200" title="fav_movies_in_db"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/fav_movies_in_db.png"  title="fav_movies_in_db"/>
     </td>
     <td>
      Favourite series registered in database
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/fav_series_in_db.png" width="200" title="fav_series_in_db"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/fav_series_in_db.png"  title="fav_series_in_db"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Favourite page
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/favourite.png" width="200" title="favourite"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/favourite.png"  title="favourite"/>
     </td>
     <td>
      Favourite page filtered by type
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/favourite_filtered.png" width="200" title="favourite_filtered"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/favourite_filtered.png"  title="favourite_filtered"/>
     </td>
+ </tr>
+ <tr>
     <td>
      Profile popup
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_popup.png" width="200" title="profile_popup"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_popup.png"  title="profile_popup"/>
     </td>
     <td>
      Profile - General
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_general.png" width="200" title="profile_general"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_general.png"  title="profile_general"/>
     </td>
     <td>
      Profile - Password
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_password.png" width="200" title="profile_password"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_password.png"  title="profile_password"/>
     </td>
     <td>
      Profile - Subscription
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_subscription.png" width="200" title="profile_subscription"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_subscription.png"  title="profile_subscription"/>
     </td>
     <td>
      Responsive design 
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/responsive.png" width="200" title="responsive"/>
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/responsive.gif"  title="responsive"/>
     </td>
  </tr>
 </table>
+
+For a closer look, click on the images and open them from the **screenshots** folder.
+For the best experience, download the app and experience it yourselves!
  
 ## Collaborators
 
