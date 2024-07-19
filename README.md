@@ -15,8 +15,8 @@ This project was built with the following:
 - <a href="https://www.w3schools.com/html/">HTML</a>.
 - <a href="https://www.w3schools.com/css/">CSS</a>. 
 - <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/">Bootstrap (Version 5.3.2)</a>.
-- <a href="https://www.w3schools.com/js/">JavaScript</a>. 
-- <a href="https://www.w3schools.com/php/">PHP</a>.
+- <a href="https://www.w3schools.com/js/">JavaScript</a> for client-interactive web pages. 
+- <a href="https://www.w3schools.com/php/">PHP</a> for server-side applications.
 - <a href="https://www.apachefriends.org/download.html">XAMPP</a> for the web server. 
 - <a href="https://developer.themoviedb.org/reference/intro/getting-started">TheMovieDB API</a> for movies and series integration being updated continuously.
 - <a href="https://dashboard.stripe.com/apikeys">Stripe API</a> for subscription payments.
