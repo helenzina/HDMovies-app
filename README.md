@@ -26,7 +26,7 @@ This project was built with the following:
  ## About The Project
  
 <p align="center">
-<img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/run.gif"  title="run"/>
+<img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/run.png"  title="run"/>
 </p>
 
 HDMovies-app is a streaming service that allows users to watch a wide variety of movies, TV shows, documentaries, and more on thousands of internet-connected devices. Enjoy unlimited viewing of our content without having to watch a single commercial.
