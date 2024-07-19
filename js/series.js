@@ -1,8 +1,8 @@
 const API_KEY = "api_key=367252e60c24db0b754ac368cd58b460";
 const BASE_URL = "https://api.themoviedb.org/3/";
 const IMG_URL = "https://image.tmdb.org/t/p/w500/";
-const SEARCH_URL = BASE_URL + '/search/tv?' + API_KEY;
-//const SEARCH_URL = BASE_URL + '/search/multi?' + API_KEY;
+const SEARCH_URL = BASE_URL + 'search/tv?' + API_KEY;
+//const SEARCH_URL = BASE_URL + 'search/multi?' + API_KEY; 
 
 const moviesContent = document.getElementById('moviesContent');
 const paginationContainer = document.getElementById('pagination');

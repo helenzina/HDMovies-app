@@ -1,7 +1,7 @@
 const API_KEY = "api_key=367252e60c24db0b754ac368cd58b460";
 const BASE_URL = "https://api.themoviedb.org/3/";
 const IMG_URL = "https://image.tmdb.org/t/p/w500/";
-const SEARCH_URL = BASE_URL + '/search/multi?' + API_KEY;
+const SEARCH_URL = BASE_URL + 'search/multi?' + API_KEY;
 
 // Assuming you have three carousels with IDs carouselExampleIndicators1, carouselExampleIndicators2, and carouselExampleIndicators3
 const carousels = document.querySelectorAll('.carousel');
@@ -36,7 +36,7 @@ function fetchGenres(mediaType) {
 }
 
 function getMedia(mediaType) {
-  const API_URL = BASE_URL + `/discover/${mediaType}?sort_by=popularity.desc&${API_KEY}`;
+  const API_URL = BASE_URL + `discover/${mediaType}?sort_by=popularity.desc&${API_KEY}`;
 
   fetchMovies(API_URL, mediaType);
 }
