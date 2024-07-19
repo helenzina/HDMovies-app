@@ -37,22 +37,27 @@ HDMovies-app is a streaming service that allows users to watch a wide variety of
  
 <p>Please follow the following steps for successful installation:</p>
 
-1. Clone the repo inside the 
+1. Install <a href="https://www.apachefriends.org/download.html">XAMPP</a> to gain access to the database **user_db**.
+2. Navigate to the following path, the **htdocs** folder of XAMPP.
+   ```sh
+   C:\xampp\htdocs
+   ```
+   
+3. Clone the repo
    ```sh
    gh repo clone helenzina/HDMovies-app
    ```
-2. Install <a href="https://www.apachefriends.org/download.html">XAMPP</a> to gain access to the database **user_db**.
 
-3. **Connect as a localhost by typing the following command in the URL section of your browser**:
+4. **Connect as a localhost by typing the following command in the URL section of your browser**:
     ```sh
    http://localhost/phpmyadmin/
     ```
 
-4. **Create a NEW database and rename it as user_db. It has to be the same**.
+5. **Create a NEW database and rename it as user_db. It has to be the same**.
   
-5. **Press the navbar toggle of the database and press Import**.
+6. **Press the navbar toggle of the database and press Import**.
 
-6. **Select the user_db database from your folder and press Import**.
+7. **Select the user_db database from your folder and press Import**.
 
 
 ## How To Run
