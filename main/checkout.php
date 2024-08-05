@@ -6,7 +6,7 @@ if(empty($_SESSION['user_id'])){
  }
 
 $mysqli = require __DIR__ . "/conn.php";
-require __DIR__ . "/../vendor/autoload.php";
+require __DIR__ . "/../stripe-api/vendor/autoload.php";
 
 $stripe_secret_key = "sk_test_51OM3jGGNq9khvLayBm5WV84F957gkPlE1DoMBo9LYaFY8KEc5LsXcMD3dpOx03ikRuIxXvBEvxnGgPU3gSatNXKg0027eTlJYq";
 \Stripe\Stripe::setApiKey($stripe_secret_key);

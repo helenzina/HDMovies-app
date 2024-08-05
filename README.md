@@ -20,6 +20,7 @@ This project was built with the following:
 - <a href="https://www.apachefriends.org/download.html">XAMPP</a> for the web server. 
 - <a href="https://developer.themoviedb.org/reference/intro/getting-started">TheMovieDB API</a> for movies and series integration being updated continuously.
 - <a href="https://dashboard.stripe.com/apikeys">Stripe API</a> for subscription payments.
+- <a href="https://github.com/PHPMailer/PHPMailer">PHPMailer API</a> for password reset using code from email.
 - <a href="https://code.visualstudio.com/">VS Code</a> for the IDE.
 
 
@@ -72,7 +73,6 @@ To run the HDMovies app, follow these steps:
     ```
 3. **Create an account or login to an existing account available in the database. Most of the saved user accounts in the database's users table have the password "abcd1234" unless you change it in the profile settings.**
 
-
 4. **For a new account or a subscription renewal, there's an example for Stripe credit card:**
 
   - Email: {your_email}
@@ -82,6 +82,15 @@ To run the HDMovies app, follow these steps:
   - Name on the credit card: {your_name}
   - Country: {your_country}
 
+5. **Optional: If you want to try the "Forgot password" feature you need to setup your own SMTP server for security reasons. You may check this tutorial** <a href="https://www.youtube.com/watch?v=JDA3a8tEBlo">here</a>. Moreover, you need to modify **mailer.php** by setting your **SMTP hostname**. <br>E.g.
+   ```sh
+   $mail->Host = "smtp.gmail.com";
+   ```
+   And your **Username**, which is your email address, as well as your **SMTP password** which will occur once you follow the steps from the tutorial. <br>E.g.
+   ```sh
+   $mail->Username = "you@gmail.com";
+   $mail->Password = "your-smtp-password";
+   ```
 
  ## Troubleshooting
 In case you experience some issues using Stripe API, please try the following steps:
@@ -91,6 +100,14 @@ In case you experience some issues using Stripe API, please try the following st
     ```sh
     composer require stripe/stripe-php
     ```
+In case you experience some issues using PHPMailer API, please try the following steps:
+
+1. **Delete the folder vendor in the project and the files: composer.json and composer.lock.**
+2. **Run the following command in the root folder of the project using the IDE's terminal:**
+    ```sh
+    composer require phpmailer/phpmailer
+    ```
+    
 
  ## Features
 ### Users can
@@ -107,6 +124,7 @@ In case you experience some issues using Stripe API, please try the following st
 - View their profile information (username and email).
 - View the remaining days of their subscription plan expiration but they can subscribe to a plan again when they login after its expiration.
 - Change their password in the profile settings.
+- Reset their password by clicking a link sent to their email address.
 
 
 ### Security & more:
@@ -119,7 +137,7 @@ In case you experience some issues using Stripe API, please try the following st
   - Validation for being a new user and having username and email that don't belong to another account.
   - Validation for password renewal.
 - Movies, series and favourite pages' amount of pagination buttons change based on the available content (considering search feature).
-- <u>TODO</u> forgot password feature using a temporary code sent to email or phone number.
+- Forgot password feature using a temporary link (valid for 30 minutes) sent to email.
 
 
  ## Usage
@@ -139,6 +157,7 @@ Here are some screenshots of the web application running showing the features me
      Login with "Remember Me" checked
       <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/cookie.png"  title="cookie"/>
     </td>
+   <!--forgot password-->
  </tr>
  <tr>
     <td>
@@ -270,12 +289,15 @@ Here are some screenshots of the web application running showing the features me
      Profile - Subscription
       <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/profile_subscription.png"  title="profile_subscription"/>
     </td>
-    <td>
-     Responsive design 
-      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/responsive.gif"  title="responsive"/>
-    </td>
  </tr>
 </table>
+
+<p align="center">
+ Responsive design 
+</br>
+ <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/responsive.gif" title="responsive"/>
+</p>
+
 
 For a closer look, click on the images and open them from the **screenshots** folder.
 For the best experience, download the app and experience it yourselves!
@@ -304,7 +326,7 @@ Distributed under the MIT License. See the LICENSE file for more information.
 
  ## Contact
  
-If you have any questions or suggestions, feel free to reach out to us:
+If you have any questions or suggestions, feel free to reach out to me:
 - Helen Zina - helenz1@windowslive.com
 - Project Link: https://github.com/helenzina/HDMovies-app
 
@@ -319,5 +341,11 @@ The resources that helped me through this whole process were the following:
 - [JavaScript](https://www.w3schools.com/js/)
 - [PHP](https://www.w3schools.com/php/)
 - [TheMovieDB API](https://developer.themoviedb.org/reference/intro/getting-started)
+- [How To Set Up SMTP Server In Gmail](https://www.youtube.com/watch?v=JDA3a8tEBlo)
+  
+Thank you <a href="https://www.youtube.com/@dave-hollingworth">Dave Hollingworth</a> for your guided tutorials. You helped me a lot through this project.
+- [PHP Password Reset by Email](https://www.youtube.com/watch?v=R9bfts9ZFjs)
+- [Send email with PHP | Create a Working Contact Form Using PHP](https://www.youtube.com/watch?v=fIYyemqKR58&t=542s)
+
 
 

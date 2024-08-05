@@ -97,7 +97,6 @@ if (isset($_COOKIE['user_email'])) {
           <label for="exampleInputEmail1" class="form-label small-text">Email Address</label>
           <input type="email" name="email" class="form-control border-0 p-0" id="exampleInputEmail1"
             aria-describedby="emailHelp" value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
-
         </div>
 
         <div class="mb-3 bg-white rounded px-2">
@@ -108,6 +107,12 @@ if (isset($_COOKIE['user_email'])) {
         <?php if ($is_invalid): ?>
           <p class="text-white invalid">Invalid email or password.</p>
         <?php endif; ?>
+
+        <div class="mt-3">
+          <p class="m-0 new">
+            <a href="forgot.php" class="signup">Forgot password?</a>
+          </p>
+        </div>
 
         <button type="submit" class="btn btn-danger mt-3">Sign In</button>
 
