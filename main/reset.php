@@ -1,41 +1,63 @@
 <?php
 $mysqli = require __DIR__ . "/conn.php";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
+$token = $_GET["token"];
 
-    $token = $_GET["token"];
-    $token_hash = hash("sha256", $token);
+if (isset($token)) {
 
-    $sql = "SELECT * FROM users WHERE reset_token_hash = ?";
-    $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param("s", $token_hash);
-    $stmt->execute();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
 
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+        $token_hash = hash("sha256", $token);
 
-    $newPassword = $_POST['newpassword'];
-    $confirmPassword = $_POST['confirmnewpassword'];
+        $sql = "SELECT * FROM users WHERE reset_token_hash = ?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $token_hash);
+        $stmt->execute();
 
-    if (!empty($newPassword) && !empty($confirmPassword)) {
-        $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-        $updatePasswordSql = "UPDATE users SET password_hash = ?, reset_token_hash = NULL, reset_token_expiration = NULL WHERE id = ?";
-        $updatePasswordStmt = $mysqli->prepare($updatePasswordSql);
-        $updatePasswordStmt->bind_param("si", $hashedNewPassword, $user["id"]);
-        $updatePasswordStmt->execute();
-        $updatePasswordStmt->close();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        if ($user) {
+            $newPassword = $_POST['password'];
+            $confirmPassword = $_POST['repeatpassword'];
+
+            if (!empty($newPassword) && !empty($confirmPassword)) {
+                $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                $updatePasswordSql = "UPDATE users SET password_hash = ?, reset_token_hash = NULL, reset_token_expiration = NULL WHERE id = ?";
+                $updatePasswordStmt = $mysqli->prepare($updatePasswordSql);
+                $updatePasswordStmt->bind_param("si", $hashedNewPassword, $user["id"]);
+                $updatePasswordStmt->execute();
+                $updatePasswordStmt->close();
+            }
+
+            if (strtotime($user["reset_token_expiration"]) <= time()) {
+                echo '<script>
+                alert("Token has expired. Please try again.");
+                window.location.href = "login.php";
+                </script>';
+                exit;
+            }
+
+            echo '<script>
+            alert("Password was reset successfully. You can now login.");
+            window.location.href = "login.php";
+            </script>';
+            exit;
+
+        } else {
+            echo '<script>
+            alert("Token not found.");
+            window.location.href = "login.php";
+            </script>';
+            exit;
+        }
+
+
     }
 
-    if ($user === null) {
-        echo '<script>alert("Token not found.")</script>';
-    } else if (strtotime($user["reset_token_expiration"]) <= time()) {
-        echo '<script>alert("Token has expired.")</script>';
-    } else {
-        echo '<script>alert("Password was reseted successfully. You can now login.")</script>';
-        header("Location: login.php");
-        exit();
-    }
-
+} else {
+    echo '<script>alert("Token not found.")</script>';
+    header("Location: login.php");
 }
 
 ?>
@@ -82,15 +104,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
                 <div class="mb-3 bg-white rounded px-2">
                     <label for="password" class="form-label small-text">New password</label>
                     <input type="password" title="Password must be at least 8 characters." pattern="[a-zA-Z0-9]{8,}"
-                        name="newpassword" required onChange="onChangePass()" class="form-control border-0 p-0"
-                        id="newpassword" aria-describedby="newPasswordHelp" />
+                        name="password" required onChange="onChangePass()" class="form-control border-0 p-0"
+                        id="password" aria-describedby="passwordHelp" />
                 </div>
 
                 <div class="mb-3 bg-white rounded px-2">
-                    <label for="confirmnewpassword" class="form-label small-text">Confirm new password</label>
-                    <input type="password" name="confirmnewpassword" required onChange="onChangePass()"
-                        class="form-control border-0 p-0" id="confirmnewpassword"
-                        aria-describedby="confirmNewPasswordHelp" />
+                    <label for="repeatpassword" class="form-label small-text">Confirm new password</label>
+                    <input type="password" name="repeatpassword" required onChange="onChangePass()"
+                        class="form-control border-0 p-0" id="repeatpassword" aria-describedby="repeatPasswordHelp" />
                 </div>
 
                 <button type="submit" name="reset" class="btn btn-danger mt-3">Reset Password</button>
@@ -104,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
         <span>HDMovies All Rights Reserved</span>
     </div>
 
+    <script src="../js/signup.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

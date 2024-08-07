@@ -131,7 +131,7 @@ if(empty($_SESSION['user_id'])){
       <div class="video-container">
         <div class="video-box">
           <a href="#" class="play-btn"></a>
-          <video id="myvideo" src="../some videos/example.mp4" controls></video>
+          <video id="myvideo" src="../videos/example.mp4" controls></video>
           <i class="bi bi-x close-video play-btn" onclick="pauseVid()" type="button"></i>
     </a>
   </div>

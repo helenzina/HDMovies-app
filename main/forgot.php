@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $token = bin2hex(random_bytes(16));
     $token_hash = hash("sha256", $token);
-    $expiration = date("Y-m-d H:i:s", time() + 60 * 30);
+    $expiration = date("Y-m-d H:i:s", time() + 60 * 5);
     $sql = "UPDATE users SET reset_token_hash = ?, reset_token_expiration = ? WHERE email = ?";
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("sss", $token_hash, $expiration, $email);
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END
 
-    Click <a href="http://localhost/HDMovies-app/main/reset.php?token=$token">here</a> to reset your password.
+    Click <a href="http://localhost/HDMovies-app/main/reset.php?token=$token">here</a> to reset your password. This link will be valid for 5 minutes.
 
     END;
         try {

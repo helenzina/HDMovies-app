@@ -115,7 +115,7 @@ if(empty($_SESSION['user_id'])){
   <!--home-->
   <div data-spy="scroll" data-target="navbar" data-offset="0">
     <section class="home container" id="home">
-      <video class="home-video home" src="../some videos/the_killer.mp4" autoplay muted loop></video>
+      <video class="home-video home" src="../videos/the_killer.mp4" autoplay muted loop></video>
 
       <div class="home-text">
         <h1 class="home-title">The Killer</h1>
@@ -124,7 +124,7 @@ if(empty($_SESSION['user_id'])){
         </a>
         <div class="video-container">
           <div class="video-box">
-            <video id="myvideo" src="../some videos/the_killer.mp4" controls></video>
+            <video id="myvideo" src="../videos/the_killer.mp4" controls></video>
             <i class="bi bi-x close-video play-btn" onclick="closeTrailer()" type="button"></i>
           </div>
         </div>
