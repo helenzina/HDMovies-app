@@ -124,7 +124,7 @@ In case you experience some issues using PHPMailer API, please try the following
 - View their profile information (username and email).
 - View the remaining days of their subscription plan expiration but they can subscribe to a plan again when they login after its expiration.
 - Change their password in the profile settings.
-- Reset their password by clicking a link sent to their email address.
+- Reset their password (while forgotten) by clicking a link sent to their email address.
 
 
 ### Security & more:
@@ -136,8 +136,9 @@ In case you experience some issues using PHPMailer API, please try the following
   - Validation for the above and the username on the signup page.
   - Validation for being a new user and having username and email that don't belong to another account.
   - Validation for password renewal.
+  - Validation for token expiration when reseting password (exceeding 5 minutes or been used already).
 - Movies, series and favourite pages' amount of pagination buttons change based on the available content (considering search feature).
-- Forgot password feature using a temporary link (valid for 30 minutes) sent to email.
+- Forgot password feature using a temporary link (valid for 5 minutes) sent to email.
 
 
  ## Usage
@@ -157,7 +158,22 @@ Here are some screenshots of the web application running showing the features me
      Login with "Remember Me" checked
       <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/cookie.png"  title="cookie"/>
     </td>
-   <!--forgot password-->
+    <td>
+     Forgot password page
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/forgot.png"  title="forgot"/>
+    </td>
+    <td>
+     Password reset email
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/email.png"  title="email"/>
+    </td>
+    <td>
+     Reset password page url with token
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/reset_url.png"  title="reset_url"/>
+    </td>
+    <td>
+     Reset password page
+      <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/reset.png"  title="reset"/>
+    </td>
  </tr>
  <tr>
     <td>
