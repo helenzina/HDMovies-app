@@ -158,6 +158,8 @@ Here are some screenshots of the web application running showing the features me
      Login with "Remember Me" checked
       <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/cookie.png"  title="cookie"/>
     </td>
+  </tr>
+  <tr>
     <td>
      Forgot password page
       <img src="https://github.com/helenzina/HDMovies-app/blob/main/screenshots/forgot.png"  title="forgot"/>
